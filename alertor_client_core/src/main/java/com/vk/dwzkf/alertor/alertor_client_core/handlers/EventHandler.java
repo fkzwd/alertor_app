@@ -1,6 +1,5 @@
-package com.vk.dwzkf.alertor.alertor_client.handlers;
+package com.vk.dwzkf.alertor.alertor_client_core.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vk.dwzkf.alertor.commons.configurators.ObjectMapperConfigurator;
 import io.socket.emitter.Emitter;

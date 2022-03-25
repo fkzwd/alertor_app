@@ -1,4 +1,4 @@
-package com.vk.dwzkf.alertor.alertor_client.config;
+package com.vk.dwzkf.alertor.alertor_client_core.config;
 
 import lombok.Getter;
 import lombok.Setter;

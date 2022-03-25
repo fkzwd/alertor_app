@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client.handlers;
 
+import com.vk.dwzkf.alertor.alertor_client_core.handlers.EventHandler;
 import com.vk.dwzkf.alertor.alertor_client.listener.AlertListener;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertCallback;
 import lombok.RequiredArgsConstructor;

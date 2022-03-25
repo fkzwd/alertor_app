@@ -1,6 +1,7 @@
 package com.vk.dwzkf.alertor.socket_server_core.command;
 
 import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIOServer;
 import com.vk.dwzkf.alertor.commons.entity.UserData;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.socket_server_core.config.IOSocketServer;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,11 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Slf4j
 public class CommandRegistry {
-    private final IOSocketServer socketServer;
     private final UserDataExtractor<SocketIOClient> userDataExtractor;
     public static final Map<Class<? extends SocketCommand<?,?>>, String> eventMapping = new ConcurrentHashMap<>();
     public static final Map<Class<? extends SocketCommand<?,?>>, Class<?>> dataMapping = new ConcurrentHashMap<>();
     public static final Map<Class<? extends SocketCommand<?,?>>, String> callbackMapping = new ConcurrentHashMap<>();
+    @SuppressWarnings("rawtypes")
+    private final List<SocketCommand> socketCommandList = Collections.synchronizedList(new ArrayList<>());
 
     public static <T,R> void register(
             SocketApiConfig<T,R> config,
@@ -36,7 +41,7 @@ public class CommandRegistry {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes"})
     public void register(SocketCommand socketCommand) {
         if (eventMapping.get(socketCommand.getClass()) == null || dataMapping.get(socketCommand.getClass()) == null) {
             log.warn("Command {} ignored cause no mapping for data and event", socketCommand.getClass().getSimpleName());
@@ -44,8 +49,23 @@ public class CommandRegistry {
         }
         String eventEndpoint = eventMapping.get(socketCommand.getClass());
         String callbackEndpoint = callbackMapping.get(socketCommand.getClass());
-        socketServer.getServer()
-                .addEventListener(
+        socketCommandList.add(socketCommand);
+        log.info("Registered listener for EVENT_ENDPOINT:[{}], RESPONSE_ENDPOINT:[{}], DATA_TYPE:[{}]",
+                eventEndpoint,
+                callbackEndpoint == null ? "[NO_RESPONSE]" : callbackEndpoint,
+                dataMapping.get(socketCommand.getClass()).getSimpleName()
+        );
+    }
+
+    public void configure(SocketIOServer socketServer) {
+        socketCommandList.forEach(c -> configure(socketServer, c));
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void configure(SocketIOServer socketServer, SocketCommand socketCommand) {
+        String eventEndpoint = eventMapping.get(socketCommand.getClass());
+        String callbackEndpoint = callbackMapping.get(socketCommand.getClass());
+        socketServer.addEventListener(
                         eventEndpoint,
                         dataMapping.get(socketCommand.getClass()),
                         ((client, data, ackSender) -> {
@@ -66,10 +86,5 @@ public class CommandRegistry {
                             }
                         })
                 );
-        log.info("Registered listener for EVENT_ENDPOINT:[{}], RESPONSE_ENDPOINT:[{}], DATA_TYPE:[{}]",
-                eventEndpoint,
-                callbackEndpoint == null ? "[NO_RESPONSE]" : callbackEndpoint,
-                dataMapping.get(socketCommand.getClass()).getSimpleName()
-        );
     }
 }

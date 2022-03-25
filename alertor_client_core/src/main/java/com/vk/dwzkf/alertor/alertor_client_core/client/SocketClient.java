@@ -1,8 +1,8 @@
-package com.vk.dwzkf.alertor.alertor_client.client;
+package com.vk.dwzkf.alertor.alertor_client_core.client;
 
-import com.vk.dwzkf.alertor.alertor_client.config.EventHandlerRegistry;
-import com.vk.dwzkf.alertor.alertor_client.config.SocketConfig;
-import com.vk.dwzkf.alertor.alertor_client.listener.ConnectorListener;
+import com.vk.dwzkf.alertor.alertor_client_core.config.EventHandlerRegistry;
+import com.vk.dwzkf.alertor.alertor_client_core.config.SocketConfig;
+import com.vk.dwzkf.alertor.alertor_client_core.listener.ConnectorListener;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -37,12 +37,12 @@ public class SocketClient {
         this.socket = socket;
     }
 
-    public <T,R> void emit(SocketApiConfig<T,R> config, T data) {
-        socket.emit(config.getEventEndpoint(), data);
-    }
-
     public void run() {
         socket.connect();
+    }
+
+    public void stop() {
+        socket.close();
     }
 
     private IO.Options getOptions() {

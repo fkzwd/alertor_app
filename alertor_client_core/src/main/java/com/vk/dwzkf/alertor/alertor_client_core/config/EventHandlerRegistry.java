@@ -1,7 +1,6 @@
-package com.vk.dwzkf.alertor.alertor_client.config;
+package com.vk.dwzkf.alertor.alertor_client_core.config;
 
-import com.vk.dwzkf.alertor.alertor_client.handlers.AlertEventHandler;
-import com.vk.dwzkf.alertor.alertor_client.handlers.EventHandler;
+import com.vk.dwzkf.alertor.alertor_client_core.handlers.EventHandler;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import io.socket.client.Socket;
 import lombok.extern.slf4j.Slf4j;

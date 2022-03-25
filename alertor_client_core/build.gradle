@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    enabled true
+}
+
 dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.2'

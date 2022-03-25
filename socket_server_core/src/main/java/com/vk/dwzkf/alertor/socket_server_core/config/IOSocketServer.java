@@ -10,6 +10,7 @@ import com.corundumstudio.socketio.listener.EventInterceptor;
 import com.corundumstudio.socketio.listener.ExceptionListenerAdapter;
 import com.corundumstudio.socketio.protocol.JacksonJsonSupport;
 import com.fasterxml.jackson.databind.Module;
+import com.vk.dwzkf.alertor.socket_server_core.command.CommandRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,15 +22,18 @@ import javax.annotation.PreDestroy;
 @Slf4j
 @Component
 public class IOSocketServer {
-    private final SocketIOServer server;
+    private SocketIOServer server;
+    private final CommandRegistry commandRegistry;
     private final ConnectListener connectListener;
     private final DisconnectListener disconnectListener;
+    private final Configuration configuration;
 
     public IOSocketServer(SocketServerConfig socketServerConfig,
                             ConnectListener connectListener,
                             ExceptionListenerAdapter exceptionHandler,
                             DisconnectListener disconnectListener,
-                            AuthorizationListener authorizationListener) {
+                            AuthorizationListener authorizationListener,
+                          CommandRegistry commandRegistry) {
         Configuration config = new Configuration();
         config.setPort(socketServerConfig.getPort());
         config.setExceptionListener(exceptionHandler);
@@ -40,9 +44,10 @@ public class IOSocketServer {
         config.setTransports(Transport.WEBSOCKET);
         config.setAuthorizationListener(authorizationListener);
         setJacksonTimeModule(config);
-        server = new SocketIOServer(config);
+        this.configuration = config;
         this.connectListener = connectListener;
         this.disconnectListener = disconnectListener;
+        this.commandRegistry = commandRegistry;
     }
 
     private void setJacksonTimeModule(Configuration config) {
@@ -50,15 +55,15 @@ public class IOSocketServer {
         config.setJsonSupport(jacksonJsonSupport);
     }
 
-    @PostConstruct
-    public void init() {
-        server.addConnectListener(connectListener);
-        server.addDisconnectListener(disconnectListener);
-        startSocketServer();
-    }
-
-    private void startSocketServer() {
+    public void start() {
         try {
+            if (server != null) {
+                stop();
+            }
+            server = new SocketIOServer(configuration);
+            commandRegistry.configure(server);
+            server.addConnectListener(connectListener);
+            server.addDisconnectListener(disconnectListener);
             server.start();
         } catch (Exception e) {
             log.error("Could not start socket server: {}", e.getMessage(), e);
@@ -70,6 +75,7 @@ public class IOSocketServer {
     public void stop() {
         log.info("stopping server socket");
         server.stop();
+        server = null;
     }
 
     public SocketIOServer getServer() {
