@@ -1,0 +1,6 @@
+rootProject.name = 'alertor'
+include 'alertor_server'
+include 'alertor_client'
+include 'socket_server_core'
+include 'commons'
+

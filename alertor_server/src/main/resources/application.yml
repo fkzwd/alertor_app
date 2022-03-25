@@ -1,0 +1,7 @@
+socket:
+  server:
+    port: 20021
+    context: /alertor
+logging:
+  level:
+    root: info
