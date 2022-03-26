@@ -8,5 +8,6 @@ logging:
     name: client.log
 socket:
   client:
-    host: 51.250.97.143
+#    host: 51.250.97.143
+    host: localhost
     port: 20021

@@ -9,4 +9,6 @@ public interface UserConnectionMonitoring {
     void onDisconnect(UserData userData);
     void addUsersListener(UsersListener usersListener);
     List<UserMonitoringData> getCurrentState();
+
+    List<UserMonitoringData> getConnectedUsers();
 }

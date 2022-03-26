@@ -9,6 +9,7 @@ import com.vk.dwzkf.alertor.ui_core.UiCore;
 import lombok.RequiredArgsConstructor;
 
 import static com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig.ALERT_CONFIG;
+import static com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig.GET_USERS;
 
 @RequiredArgsConstructor
 public class ClientUi extends UiCore<Void> {
@@ -20,6 +21,7 @@ public class ClientUi extends UiCore<Void> {
         addCommand(UiCommand.from("Send alert", () -> new AlertUi(eventSender).start()));
         addCommand(UiCommand.from("Restart", socketClient::restart));
         addCommand(UiCommand.from("GO SMOKE!", () -> eventSender.emit(ALERT_CONFIG, new AlertEvent("GO KURIT! ", 150, 35))));
+        addCommand(UiCommand.from("Show Users", () -> eventSender.emit(GET_USERS)));
     }
 
     @Override

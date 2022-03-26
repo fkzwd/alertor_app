@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -79,6 +80,14 @@ public class UserMonitoring implements UserConnectionMonitoring {
             }
         });
         return result;
+    }
+
+    @Override
+    public List<UserMonitoringData> getConnectedUsers() {
+        return userMap.values()
+                .stream()
+                .filter(UserMonitoringData::isConnected)
+                .collect(Collectors.toList());
     }
 
     public void clear() {
