@@ -6,6 +6,7 @@ build/
 !**/src/test/**
 gradle
 jooq/
+*.log
 
 ### STS ###
 .apt_generated
