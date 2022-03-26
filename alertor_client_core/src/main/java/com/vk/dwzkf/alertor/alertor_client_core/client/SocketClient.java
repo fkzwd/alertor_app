@@ -3,7 +3,6 @@ package com.vk.dwzkf.alertor.alertor_client_core.client;
 import com.vk.dwzkf.alertor.alertor_client_core.config.EventHandlerRegistry;
 import com.vk.dwzkf.alertor.alertor_client_core.config.SocketConfig;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.ConnectorListener;
-import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.engineio.client.transports.WebSocket;
@@ -19,19 +18,22 @@ import java.net.URI;
 @RequiredArgsConstructor
 @Slf4j
 public class SocketClient {
+    @Getter
     private final SocketConfig socketConfig;
     private final ConnectorListener connectorListener;
     private final EventHandlerRegistry eventHandlerRegistry;
     @Getter
     private Socket socket;
     private boolean initialized = false;
+    @Getter
+    private IO.Options config;
 
     @PostConstruct
     public void initSocket() {
         if (initialized) return;
         URI uri = URI.create(String.format("%s://%s:%s", socketConfig.getProtocol(), socketConfig.getHost(), socketConfig.getPort()));
-        IO.Options options = getOptions();
-        Socket socket = IO.socket(uri, options);
+        config = getOptions();
+        Socket socket = IO.socket(uri, config);
         socket.on(Socket.EVENT_CONNECT, connectorListener::onConnect);
         socket.on(Socket.EVENT_CONNECT_ERROR, connectorListener::onConnectError);
         socket.on(Socket.EVENT_DISCONNECT, connectorListener::onDisconnect);
@@ -41,17 +43,17 @@ public class SocketClient {
     }
 
     public void restart() {
-        stop();
+        disconnect();
         initSocket();
-        run();
+        connect();
     }
 
-    public void run() {
+    public void connect() {
         if (initialized)
             socket.connect();
     }
 
-    public void stop() {
+    public void disconnect() {
         if (initialized) {
             socket.disconnect();
             socket.close();

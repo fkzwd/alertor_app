@@ -13,6 +13,6 @@ public class AlertorClient {
         builder.headless(false);
         SocketClient socket = builder.run(args)
                 .getBean(SocketClient.class);
-        socket.run();
+        socket.connect();
     }
 }

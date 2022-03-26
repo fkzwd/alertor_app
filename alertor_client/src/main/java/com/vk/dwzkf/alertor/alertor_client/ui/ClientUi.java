@@ -3,7 +3,6 @@ package com.vk.dwzkf.alertor.alertor_client.ui;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.alertor_client_core.client.SocketClient;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertEvent;
-import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.ui_core.UiCommand;
 import com.vk.dwzkf.alertor.ui_core.UiCore;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,7 @@ public class ClientUi extends UiCore<Void> {
 
     @Override
     public void onTerminate() {
-        socketClient.stop();
+        socketClient.disconnect();
         System.exit(0);
     }
 }
