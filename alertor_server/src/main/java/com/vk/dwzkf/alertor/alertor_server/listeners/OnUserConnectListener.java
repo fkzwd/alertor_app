@@ -15,10 +15,7 @@ public class OnUserConnectListener implements UsersListener {
 
     @Override
     public void onConnect(UserData userData) {
-        eventSender.sendEvent(userData,
-                SocketApiConfig.ALERT_CONFIG,
-                new AlertCallback("Go KURIT!! ", 150 ,30)
-        );
+
     }
 
     @Override

@@ -1,7 +1,3 @@
-socket:
-  server:
-    port: 20021
-    context: /alertor
 logging:
   level:
     root: info
@@ -9,4 +5,8 @@ logging:
     console:
   file:
     path: ./
-    name: server.log
+    name: client.log
+socket:
+  client:
+    host: 51.250.97.143
+    port: 20021

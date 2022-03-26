@@ -14,7 +14,7 @@ public class OnConnectedListener implements SocketConnectorListener {
 
     @Override
     public void onConnect(Object[] args) {
-        eventSender.emit(SocketApiConfig.ALERT_CONFIG, new AlertEvent("TEST MESSAGE", 150, 30));
+
     }
 
     @Override

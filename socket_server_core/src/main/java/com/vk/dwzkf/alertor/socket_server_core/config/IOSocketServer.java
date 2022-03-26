@@ -71,8 +71,14 @@ public class IOSocketServer {
         }
     }
 
+    public void restart() {
+        stop();
+        start();
+    }
+
     @PreDestroy
     public void stop() {
+        if (server == null) return;
         log.info("stopping server socket");
         server.stop();
         server = null;

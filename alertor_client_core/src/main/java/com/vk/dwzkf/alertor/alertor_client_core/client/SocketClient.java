@@ -24,9 +24,11 @@ public class SocketClient {
     private final EventHandlerRegistry eventHandlerRegistry;
     @Getter
     private Socket socket;
+    private boolean initialized = false;
 
     @PostConstruct
     public void initSocket() {
+        if (initialized) return;
         URI uri = URI.create(String.format("%s://%s:%s", socketConfig.getProtocol(), socketConfig.getHost(), socketConfig.getPort()));
         IO.Options options = getOptions();
         Socket socket = IO.socket(uri, options);
@@ -35,14 +37,27 @@ public class SocketClient {
         socket.on(Socket.EVENT_DISCONNECT, connectorListener::onDisconnect);
         eventHandlerRegistry.configure(socket);
         this.socket = socket;
+        initialized = true;
+    }
+
+    public void restart() {
+        stop();
+        initSocket();
+        run();
     }
 
     public void run() {
-        socket.connect();
+        if (initialized)
+            socket.connect();
     }
 
     public void stop() {
-        socket.close();
+        if (initialized) {
+            socket.disconnect();
+            socket.close();
+        }
+        initialized = false;
+        socket = null;
     }
 
     private IO.Options getOptions() {

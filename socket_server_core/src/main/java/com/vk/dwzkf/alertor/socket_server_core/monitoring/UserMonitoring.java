@@ -72,6 +72,16 @@ public class UserMonitoring implements UserConnectionMonitoring {
 
     @Override
     public List<UserMonitoringData> getCurrentState() {
-        return new ArrayList<>(userMap.values());
+        final ArrayList<UserMonitoringData> result = new ArrayList<>(userMap.values());
+        result.forEach(d -> {
+            if(!d.isConnected()) {
+                userMap.remove(d.getUserData().getUuid());
+            }
+        });
+        return result;
+    }
+
+    public void clear() {
+        userMap.clear();
     }
 }
