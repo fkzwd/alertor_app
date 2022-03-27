@@ -3,7 +3,6 @@ package com.vk.dwzkf.alertor.alertor_client.ui.window;
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
-import com.vk.dwzkf.alertor.commons.entity.UserData;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
 import lombok.RequiredArgsConstructor;
@@ -12,18 +11,13 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.html.HTML;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 
 @Component
@@ -41,11 +35,22 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         setLayout(new BorderLayout());
         createElements();
         JScrollPane scrollPane = new JScrollPane(chatList);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        scrollPane.getViewport().addChangeListener(new ChangeListener() {
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            private int prevMaxSize = -1;
             @Override
-            public void stateChanged(ChangeEvent e) {
-                scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                if (prevMaxSize == -1) {
+                    prevMaxSize = e.getAdjustable().getMaximum();
+                }
+                if (prevMaxSize != e.getAdjustable().getMaximum()) {
+                    if (chatList.getLastVisibleIndex() != -1) {
+                        if (chatList.getLastVisibleIndex() == dlm.size() - 1) {
+                            e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+                        }
+                    }
+                }
+                prevMaxSize = e.getAdjustable().getMaximum();
             }
         });
         add(scrollPane);
