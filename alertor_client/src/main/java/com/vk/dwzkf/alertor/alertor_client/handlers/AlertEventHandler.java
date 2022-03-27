@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client.handlers;
 
+import com.vk.dwzkf.alertor.alertor_client.alertor.AlertConfig;
 import com.vk.dwzkf.alertor.alertor_client_core.handlers.EventHandler;
 import com.vk.dwzkf.alertor.alertor_client.listener.AlertListener;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertCallback;
@@ -12,9 +13,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AlertEventHandler extends EventHandler<AlertCallback> {
     private final AlertListener alertListener;
+    private final AlertConfig alertConfig;
 
     @Override
     public void handleEvent(AlertCallback event) {
-        alertListener.onAlert(event);
+        if (alertConfig.isAlertEnabled()) {
+            alertListener.onAlert(event);
+        }
     }
 }

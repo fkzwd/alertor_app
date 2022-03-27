@@ -33,6 +33,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
                     socketClient.initSocket();
                     socketClient.connect();
                     setCanEdit(false);
+                    jButton.setText("Disconnect");
                 }
             } else if (jButton.getText().equalsIgnoreCase("disconnect")) {
                 socketClient.disconnect();

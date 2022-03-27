@@ -13,6 +13,7 @@ public class EventSender {
     private final SocketClient socketClient;
 
     public <T, R> void emit(SocketApiConfig<T, R> config, T data) {
+        if (!socketClient.isInitialized()) return;
         try {
             JSONObject jsonObject = new JSONObject(data);
             socketClient.getSocket()
@@ -26,6 +27,7 @@ public class EventSender {
     }
 
     public <T, R> void emit(SocketApiConfig<T, R> config) {
+        if (!socketClient.isInitialized()) return;
         try {
             socketClient.getSocket().emit(config.getEventEndpoint());
         } catch (Exception e) {

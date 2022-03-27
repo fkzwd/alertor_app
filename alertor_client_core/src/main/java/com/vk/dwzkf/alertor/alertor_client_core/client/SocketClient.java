@@ -24,6 +24,7 @@ public class SocketClient {
     private final EventHandlerRegistry eventHandlerRegistry;
     @Getter
     private Socket socket;
+    @Getter
     private boolean initialized = false;
     @Getter
     private IO.Options config;

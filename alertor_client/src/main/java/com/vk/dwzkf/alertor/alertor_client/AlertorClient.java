@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client;
 
+import com.vk.dwzkf.alertor.alertor_client.alertor.AudioAlertor;
 import com.vk.dwzkf.alertor.alertor_client.ui.ClientUi;
 import com.vk.dwzkf.alertor.alertor_client.ui.window.MainUi;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
@@ -18,6 +19,7 @@ public class AlertorClient {
     private static String mode = "window";
 
     public static void main(String[] args) throws Exception {
+        AudioAlertor.setAudio("skrillex_holdin_on_8.wav");
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("window")) {
                 mode = "window";
@@ -35,7 +37,7 @@ public class AlertorClient {
     }
 
     public void start() {
-        socketClient.connect();
+//        socketClient.connect();
         if (mode.equalsIgnoreCase("console")) {
             new ClientUi(eventSender,socketClient).start();
         } else if (mode.equalsIgnoreCase("window")) {

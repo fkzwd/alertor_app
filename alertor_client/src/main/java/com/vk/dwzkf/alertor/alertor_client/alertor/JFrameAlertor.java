@@ -1,16 +1,10 @@
 package com.vk.dwzkf.alertor.alertor_client.alertor;
 
-import com.vk.dwzkf.alertor.alertor_client.AlertorClient;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.locks.LockSupport;
 
 @Slf4j
 public class JFrameAlertor extends JFrame {
@@ -20,12 +14,6 @@ public class JFrameAlertor extends JFrame {
     private final int alertTimeoutMs;
     private static final Font font = new Font(Font.SERIF, Font.BOLD, 35);
     private final String message;
-    private static byte[] audio = null;
-    private static Clip audioClip = null;
-
-    static {
-        loadAudio();
-    }
 
     public JFrameAlertor(int alertCycles, int alertTimeoutMs, String message) throws HeadlessException {
         this.alertCycles = alertCycles;
@@ -47,21 +35,6 @@ public class JFrameAlertor extends JFrame {
         setLayout(new GridBagLayout());
     }
 
-    private static void loadAudio() {
-        URL audioRes = AlertorClient.class.getClassLoader().getResource("skrillex_holdin_on_8.wav");
-        try (InputStream in = audioRes.openConnection().getInputStream()) {
-            audio = in.readAllBytes();
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(audio));
-            Clip audioClip = AudioSystem.getClip();
-            audioClip.open(audioInputStream);
-            audioClip.getMicrosecondLength();
-            JFrameAlertor.audioClip = audioClip;
-            audioInputStream.close();
-        } catch (Exception e) {
-            log.error("Cannot load sound.", e);
-        }
-    }
-
     private void reset() {
         if (isVisible()) {
             setVisible(false);
@@ -79,7 +52,7 @@ public class JFrameAlertor extends JFrame {
     }
 
     public void start() {
-        Clip clip = playSound();
+        AudioAlertor.play();
         final Thread fontReplaces = new Thread(() -> {
             int cylce = 0;
             while (!Thread.currentThread().isInterrupted() && cylce < alertCycles) {
@@ -126,23 +99,8 @@ public class JFrameAlertor extends JFrame {
             e.printStackTrace();
         }
         setVisible(false);
-        if (clip != null) {
-            clip.stop();
-            clip.setFramePosition(0);
-            clip.setMicrosecondPosition(0);
-        }
+        AudioAlertor.stop();
         reset();
-    }
-
-    private Clip playSound(){
-        if (audioClip == null) return null;
-        try {
-            audioClip.start();
-            return audioClip;
-        } catch (Exception e) {
-            log.error("Cannot play sound.", e);
-            return null;
-        }
     }
 
     public void shutdown() {

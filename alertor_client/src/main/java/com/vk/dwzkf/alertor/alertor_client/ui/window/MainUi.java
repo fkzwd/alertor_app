@@ -10,6 +10,8 @@ import java.awt.*;
 @RequiredArgsConstructor
 public class MainUi extends JFrame {
     private final ConnectorUi connectorUi;
+    private final RightPanelUi rightPanelUi;
+
     private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
     public static final double COEFFICIENT = 0.8;
     private static final int width = (int) (toolkit.getScreenSize().width * COEFFICIENT);
@@ -26,6 +28,7 @@ public class MainUi extends JFrame {
 
     public void start() {
         add(connectorUi, BorderLayout.NORTH);
+        add(rightPanelUi, BorderLayout.EAST);
         setVisible(true);
     }
 }
