@@ -1,6 +1,7 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client_core.client.SocketClient;
+import com.vk.dwzkf.alertor.alertor_client_core.config.SocketConfig;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
 import com.vk.dwzkf.alertor.commons.configurators.Constants;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,10 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class ConnectorUi extends JPanel implements SocketConnectorListener {
+    public static final Color BAD_COLOR = new Color(171, 0, 40);
+    public static final Color GOOD_COLOR = new Color(74, 171, 0);
+    public static final String PORT_REGEX = "\\d{2,5}";
+    public static final String HOST_REGEX = "(localhost)|(\\d{1,3}(\\.\\d{1,3}){3})";
     private final SocketClient socketClient;
     private JLabel connectionState;
     private JTextField hostTextField;
@@ -24,25 +29,28 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     private JTextField nameField;
     private JButton connectionButton;
 
+    public void updateConfig() {
+        hostTextField.setText(socketClient.getSocketConfig().getHost());
+        portField.setText(String.valueOf(socketClient.getSocketConfig().getPort()));
+        nameField.setText(socketClient.getSocketConfig().getName());
+    }
+
     private JButton createConnectionButton() {
         JButton jButton = new JButton("Connect");
         jButton.addActionListener(event -> {
             if (jButton.getText().equalsIgnoreCase("connect")) {
-                if (!portField.getText().matches("\\d{2,5}")
-                        || !hostTextField.getText().matches("(localhost)|(\\d{1,3}(\\.\\d{1,3}){3})")) {
-                    hostTextField.setText("Please enter valid HOST and PORT");
-                } else {
-                    socketClient.getSocketConfig().setHost(hostTextField.getText());
-                    socketClient.getSocketConfig().setPort(Integer.parseInt(portField.getText()));
-                    if (nameField.getText() != null && nameField.getText().matches(Constants.SOCKET_NAME_REGEX)) {
-                        socketClient.getSocketConfig().setName(nameField.getText());
-                    }
-                    socketClient.disconnect();
-                    socketClient.initSocket();
-                    socketClient.connect();
-                    setCanEdit(false);
-                    jButton.setText("Disconnect");
-                }
+                if (portField.getText().matches(PORT_REGEX)
+                        && hostTextField.getText().matches(HOST_REGEX) && nameField.getText().matches(Constants.SOCKET_NAME_REGEX)) {
+                            hostTextField.setForeground(null);
+                            socketClient.getSocketConfig().setHost(hostTextField.getText());
+                            socketClient.getSocketConfig().setPort(Integer.parseInt(portField.getText()));
+                            socketClient.getSocketConfig().setName(nameField.getText());
+                            socketClient.disconnect();
+                            socketClient.initSocket();
+                            socketClient.connect();
+                            setCanEdit(false);
+                            jButton.setText("Disconnect");
+                        }
             } else if (jButton.getText().equalsIgnoreCase("disconnect")) {
                 socketClient.disconnect();
                 jButton.setText("Connect");
@@ -61,6 +69,22 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
 
     private JTextField createHostTextField() {
         JTextField jTextField = new JTextField(socketClient.getSocketConfig().getHost(), 25);
+        jTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handleHostChanged(jTextField);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handleHostChanged(jTextField);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                handleHostChanged(jTextField);
+            }
+        });
         return jTextField;
     }
 
@@ -128,13 +152,49 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
             jTextField.setForeground(null);
             connectionButton.setEnabled(true);
         } else {
-            jTextField.setForeground(Color.RED);
+            jTextField.setForeground(BAD_COLOR);
+            connectionButton.setEnabled(false);
+        }
+    }
+
+    private void handlePortChanged(JTextField portField) {
+        if (portField.getText().matches(PORT_REGEX)) {
+            portField.setForeground(null);
+            connectionButton.setEnabled(true);
+        } else {
+            portField.setForeground(BAD_COLOR);
+            connectionButton.setEnabled(false);
+        }
+    }
+
+    private void handleHostChanged(JTextField hostField) {
+        if (hostField.getText().matches(HOST_REGEX)) {
+            hostField.setForeground(null);
+            connectionButton.setEnabled(true);
+        } else {
+            hostField.setForeground(BAD_COLOR);
             connectionButton.setEnabled(false);
         }
     }
 
     private JTextField createPortField() {
         JTextField jTextField = new JTextField(String.valueOf(socketClient.getSocketConfig().getPort()), 6);
+        jTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handlePortChanged(jTextField);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handlePortChanged(jTextField);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                handlePortChanged(jTextField);
+            }
+        });
         return jTextField;
     }
 
@@ -167,9 +227,9 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
 
     private void setConnectedColor(boolean connected) {
         if (connected) {
-            connectionState.setForeground(new Color(74,171,0));
+            connectionState.setForeground(GOOD_COLOR);
         } else {
-            connectionState.setForeground(new Color(171,0,40));
+            connectionState.setForeground(BAD_COLOR);
         }
     }
 
