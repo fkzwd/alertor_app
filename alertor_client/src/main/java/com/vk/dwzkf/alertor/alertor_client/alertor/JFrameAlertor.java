@@ -42,7 +42,9 @@ public class JFrameAlertor extends JFrame {
         lables.forEach(this::remove);
         lables.clear();
         JTextArea label = new JTextArea();
+        label.setCaret(new NoopCaret());
         label.setText(message);
+        label.setEditable(false);
         label.setForeground(Color.RED);
         label.setBackground(Color.BLACK);
         label.setOpaque(true);
