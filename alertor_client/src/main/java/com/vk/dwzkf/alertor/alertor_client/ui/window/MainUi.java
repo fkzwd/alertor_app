@@ -12,6 +12,7 @@ public class MainUi extends JFrame {
     private final ConnectorUi connectorUi;
     private final RightPanelUi rightPanelUi;
     private final UsersUi usersUi;
+    private final ChatUi chatUi;
 
     private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
     public static final double COEFFICIENT = 0.8;
@@ -31,6 +32,7 @@ public class MainUi extends JFrame {
         add(connectorUi, BorderLayout.NORTH);
         add(rightPanelUi, BorderLayout.EAST);
         add(usersUi, BorderLayout.WEST);
+        add(chatUi, BorderLayout.CENTER);
         setVisible(true);
     }
 }

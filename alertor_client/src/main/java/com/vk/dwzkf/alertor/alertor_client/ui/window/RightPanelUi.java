@@ -10,16 +10,18 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 @Component
 @RequiredArgsConstructor
 public class RightPanelUi extends JPanel {
-    public static final String DISABLE_ALERT = "Disable alert";
-    public static final String ENABLE_ALERT = "Enable alert";
     private JButton alertButton;
     private JCheckBox alertEnabledCheckbox;
     private JCheckBox soundEnabledCheckbox;
+    private JTextArea alertMessageArea;
+    private JButton sendAlertButton;
     private final AlertConfig alertConfig;
     private final EventSender eventSender;
 
@@ -30,10 +32,62 @@ public class RightPanelUi extends JPanel {
         alertButton = createAlertButton();
         alertEnabledCheckbox = createAlertEnabledCheckbox();
         soundEnabledCheckbox = createSoundEnabledCheckbox();
+        alertMessageArea = createAlertMessageArea();
+        sendAlertButton = createSendAlertButton();
+
 
         add(alertButton);
         add(alertEnabledCheckbox);
         add(soundEnabledCheckbox);
+        add(new JLabel("Alert message:"));
+        add(wrapToScroll(alertMessageArea));
+        add(sendAlertButton);
+    }
+
+    private JButton createSendAlertButton() {
+        JButton jButton = new JButton("Send alert");
+        jButton.setEnabled(false);
+        jButton.setAlignmentX(0);
+        jButton.setAlignmentY(0);
+        jButton.addActionListener(l -> {
+            eventSender.emit(SocketApiConfig.ALERT_CONFIG, new AlertEvent(alertMessageArea.getText(), 150, 30));
+        });
+        return jButton;
+    }
+
+    private JScrollPane wrapToScroll(java.awt.Component c) {
+        JScrollPane areaScroll = new JScrollPane(c);
+        areaScroll.setMaximumSize(areaScroll.getPreferredSize());
+        areaScroll.setAlignmentX(0);
+        areaScroll.setAlignmentY(0);
+        return areaScroll;
+    }
+
+    private JTextArea createAlertMessageArea() {
+        JTextArea jTextArea = new JTextArea();
+        jTextArea.setLineWrap(true);
+        jTextArea.setRows(4);
+        jTextArea.setColumns(25);
+        jTextArea.setMaximumSize(jTextArea.getPreferredSize());
+        jTextArea.setAlignmentX(0);
+        jTextArea.setAlignmentY(0);
+        jTextArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                sendAlertButton.setEnabled(!jTextArea.getText().isBlank());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                sendAlertButton.setEnabled(!jTextArea.getText().isBlank());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                sendAlertButton.setEnabled(!jTextArea.getText().isBlank());
+            }
+        });
+        return jTextArea;
     }
 
     private JCheckBox createSoundEnabledCheckbox() {
@@ -42,6 +96,9 @@ public class RightPanelUi extends JPanel {
         soundEnabled.addActionListener(e -> {
             AudioAlertor.AudioConfig.enabled = soundEnabled.isSelected();
         });
+        soundEnabled.setAlignmentX(0);
+        soundEnabled.setAlignmentY(0);
+        soundEnabled.setForeground(Color.DARK_GRAY);
         return soundEnabled;
     }
 
@@ -51,6 +108,9 @@ public class RightPanelUi extends JPanel {
         alertEnabled.addActionListener(e -> {
             alertConfig.setAlertEnabled(alertEnabled.isSelected());
         });
+        alertEnabled.setAlignmentX(0);
+        alertEnabled.setAlignmentY(0);
+        alertEnabled.setForeground(Color.DARK_GRAY);
         return alertEnabled;
     }
 
@@ -59,6 +119,8 @@ public class RightPanelUi extends JPanel {
         jButton.addActionListener(e -> {
             eventSender.emit(SocketApiConfig.ALERT_CONFIG, new AlertEvent("GO SMOKE!! ", 150, 30));
         });
+        jButton.setAlignmentX(0);
+        jButton.setAlignmentY(0);
         return jButton;
     }
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Slf4j
 public class JFrameAlertor extends JFrame {
     private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
-    private final java.util.List<JLabel> lables = new ArrayList<>();
+    private final java.util.List<java.awt.Component> lables = new ArrayList<>();
     private final int alertCycles;
     private final int alertTimeoutMs;
     private static final Font font = new Font(Font.SERIF, Font.BOLD, 35);
@@ -41,12 +41,12 @@ public class JFrameAlertor extends JFrame {
         }
         lables.forEach(this::remove);
         lables.clear();
-        JLabel label = new JLabel(message, SwingConstants.CENTER);
+        JTextArea label = new JTextArea();
+        label.setText(message);
         label.setForeground(Color.RED);
         label.setBackground(Color.BLACK);
         label.setOpaque(true);
         label.setFont(font);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
         lables.add(label);
         add(label);
     }
@@ -62,9 +62,7 @@ public class JFrameAlertor extends JFrame {
                     lables.forEach(l -> {
                         if (l.getForeground() == Color.RED) {
                             l.setForeground(Color.BLACK);
-                            JFrameAlertor.this.repaint();
                             l.setBackground(Color.RED);
-                            JFrameAlertor.this.repaint();
                         } else {
                             l.setForeground(Color.RED);
                             l.setBackground(Color.BLACK);

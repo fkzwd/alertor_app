@@ -22,9 +22,15 @@ public class UsersUi extends JPanel implements SocketConnectorListener, UserStat
         setLayout(mgr);
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         jList.setFixedCellHeight(25);
-        jList.setFixedCellWidth(150);
+        jList.setFixedCellWidth(200);
         add(new JLabel("Users"));
-        add(new JScrollPane(jList));
+        add(wrapToScroll(jList));
+    }
+
+    private JScrollPane wrapToScroll(java.awt.Component c) {
+        final JScrollPane scrollPane = new JScrollPane(c);
+        scrollPane.setMaximumSize(scrollPane.getPreferredSize());
+        return scrollPane;
     }
 
     @Override
