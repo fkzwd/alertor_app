@@ -1,8 +1,8 @@
 logging:
   level:
     root: info
-  pattern:
-    console:
+#  pattern:
+#    console:
   file:
     path: ./
     name: client.log

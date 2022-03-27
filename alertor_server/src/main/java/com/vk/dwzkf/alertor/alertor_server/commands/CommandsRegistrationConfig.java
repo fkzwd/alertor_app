@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_server.commands;
 
+import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.socket_server_core.command.CommandRegistry;
 import com.vk.dwzkf.alertor.socket_server_core.command.SocketCommand;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class CommandsRegistrationConfig {
     static {
         CommandRegistry.register(ALERT_CONFIG, AlertCommand.class);
         CommandRegistry.register(USERS_STATE, GetUsersCommand.class);
+        CommandRegistry.register(SEND_MESSAGE, ReceiveMessageCommand.class);
     }
 
     @Autowired(required = false)
