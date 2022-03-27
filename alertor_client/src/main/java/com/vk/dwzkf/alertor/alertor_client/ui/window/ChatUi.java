@@ -2,6 +2,7 @@ package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
+import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
 import com.vk.dwzkf.alertor.commons.entity.UserData;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
@@ -28,7 +29,7 @@ import java.awt.event.KeyEvent;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ChatUi extends JPanel implements MessageListener {
+public class ChatUi extends JPanel implements MessageListener, SocketConnectorListener {
     private DefaultListModel<UserMessage> dlm = new DefaultListModel<>();
     private JButton sendButton;
     private JTextArea messageArea;
@@ -185,5 +186,19 @@ public class ChatUi extends JPanel implements MessageListener {
     @Override
     public void onMessage(UserMessage userMessage) {
         dlm.addElement(userMessage);
+    }
+
+    @Override
+    public void onConnect(Object[] args) {
+    }
+
+    @Override
+    public void onDisconnect(Object[] args) {
+        dlm.clear();
+    }
+
+    @Override
+    public void onConnectError(Object[] args) {
+        dlm.clear();
     }
 }
