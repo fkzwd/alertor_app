@@ -65,14 +65,13 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     }
 
     private JLabel createConnectionStateLabel() {
-        JLabel label = new JLabel("Not connected");
-        label.setForeground(Color.RED);
-        return label;
+        return new JLabel("Not connected");
     }
 
     @PostConstruct
     public void configure() {
         createElements();
+        setBackground(Color.LIGHT_GRAY);
         GridLayout mgr = new GridLayout();
         setLayout(mgr);
         mgr.setHgap(5);
@@ -98,6 +97,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
         hostTextField  = createHostTextField();
         nameField = createNameField();
         connectionState = createConnectionStateLabel();
+        setConnectedColor(false);
         connectionButton = createConnectionButton();
         portField = createPortField();
     }
@@ -141,7 +141,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     @Override
     public void onConnect(Object[] args) {
         connectionState.setText("Connected");
-        connectionState.setForeground(Color.GREEN);
+        setConnectedColor(true);
 
         setCanEdit(false);
         connectionButton.setText("Disconnect");
@@ -158,17 +158,25 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     @Override
     public void onDisconnect(Object[] args) {
         connectionState.setText("Not connected");
-        connectionState.setForeground(Color.RED);
+        setConnectedColor(false);
         setCanEdit(true);
         connectionButton.setText("Connect");
 
         _repaint();
     }
 
+    private void setConnectedColor(boolean connected) {
+        if (connected) {
+            connectionState.setForeground(new Color(74,171,0));
+        } else {
+            connectionState.setForeground(new Color(171,0,40));
+        }
+    }
+
     @Override
     public void onConnectError(Object[] args) {
         connectionState.setText("Connect error");
-        connectionState.setForeground(Color.RED);
+        setConnectedColor(false);
         connectionButton.setText("Disconnect");
 
         _repaint();

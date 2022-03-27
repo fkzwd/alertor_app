@@ -30,7 +30,7 @@ public class JFrameAlertor extends JFrame {
         int width = toolkit.getScreenSize().width;
         int height = toolkit.getScreenSize().height;
         setBounds(0, 0, width, height);
-        setAlwaysOnTop(false);
+        setAlwaysOnTop(true);
         setResizable(false);
         setLayout(new GridBagLayout());
     }
@@ -41,7 +41,7 @@ public class JFrameAlertor extends JFrame {
         }
         lables.forEach(this::remove);
         lables.clear();
-        JLabel label = new JLabel(message.repeat(20));
+        JLabel label = new JLabel(message, SwingConstants.CENTER);
         label.setForeground(Color.RED);
         label.setBackground(Color.BLACK);
         label.setOpaque(true);
@@ -82,8 +82,10 @@ public class JFrameAlertor extends JFrame {
             while (!Thread.currentThread().isInterrupted() && cylce < alertCycles) {
                 cylce++;
                 try {
-                    Thread.sleep(15);
-                    requestFocus();
+                    Thread.sleep(alertTimeoutMs);
+                    JFrameAlertor.this.toFront();
+                    setState(JFrame.NORMAL);
+                    JFrameAlertor.this.requestFocusInWindow();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -100,6 +102,7 @@ public class JFrameAlertor extends JFrame {
         }
         setVisible(false);
         AudioAlertor.stop();
+        setAlwaysOnTop(false);
         reset();
     }
 

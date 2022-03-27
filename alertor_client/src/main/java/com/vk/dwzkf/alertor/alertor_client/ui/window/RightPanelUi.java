@@ -25,7 +25,8 @@ public class RightPanelUi extends JPanel {
 
     @PostConstruct
     public void configure() {
-        setLayout(new GridLayout(3,1,10,10));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         alertButton = createAlertButton();
         alertEnabledCheckbox = createAlertEnabledCheckbox();
         soundEnabledCheckbox = createSoundEnabledCheckbox();

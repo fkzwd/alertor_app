@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
+import java.awt.*;
 
 @Component
 @RequiredArgsConstructor
@@ -17,8 +18,12 @@ public class UsersUi extends JPanel implements SocketConnectorListener, UserStat
 
     @PostConstruct
     public void configure() {
-        jList.setFixedCellHeight(35);
+        final BoxLayout mgr = new BoxLayout(this, BoxLayout.Y_AXIS);
+        setLayout(mgr);
+        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        jList.setFixedCellHeight(25);
         jList.setFixedCellWidth(150);
+        add(new JLabel("Users"));
         add(new JScrollPane(jList));
     }
 
