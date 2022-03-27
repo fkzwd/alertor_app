@@ -47,7 +47,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
                 socketClient.disconnect();
                 jButton.setText("Connect");
                 connectionState.setText("Not connected");
-                connectionState.setForeground(Color.RED);
+                setConnectedColor(false);
                 setCanEdit(true);
             }
             _repaint();
