@@ -2,13 +2,17 @@ package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client_core.client.SocketClient;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
+import com.vk.dwzkf.alertor.commons.configurators.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     private JLabel connectionState;
     private JTextField hostTextField;
     private JTextField portField;
+    private JTextField nameField;
     private JButton connectionButton;
 
     private JButton createConnectionButton() {
@@ -29,6 +34,9 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
                 } else {
                     socketClient.getSocketConfig().setHost(hostTextField.getText());
                     socketClient.getSocketConfig().setPort(Integer.parseInt(portField.getText()));
+                    if (nameField.getText() != null && nameField.getText().matches(Constants.SOCKET_NAME_REGEX)) {
+                        socketClient.getSocketConfig().setName(nameField.getText());
+                    }
                     socketClient.disconnect();
                     socketClient.initSocket();
                     socketClient.connect();
@@ -70,17 +78,59 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
         mgr.setHgap(5);
         mgr.setVgap(5);
         setBorder(new EmptyBorder(15,15,15,15));
+        add(getHintLabel("Host:"));
         add(hostTextField);
+        add(getHintLabel("Port:"));
         add(portField);
+        add(getHintLabel("Name:"));
+        add(nameField);
         add(connectionButton);
         add(connectionState);
     }
 
+    private JLabel getHintLabel(String s) {
+        final JLabel label = new JLabel(s);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        return label;
+    }
+
     private void createElements() {
         hostTextField  = createHostTextField();
+        nameField = createNameField();
         connectionState = createConnectionStateLabel();
         connectionButton = createConnectionButton();
         portField = createPortField();
+    }
+
+    private JTextField createNameField() {
+        JTextField jTextField = new JTextField(socketClient.getSocketConfig().getName());
+        jTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handleNameFieldChanged(jTextField);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handleNameFieldChanged(jTextField);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                handleNameFieldChanged(jTextField);
+            }
+        });
+        return jTextField;
+    }
+
+    private void handleNameFieldChanged(JTextField jTextField) {
+        if (jTextField.getText().matches(Constants.SOCKET_NAME_REGEX)) {
+            jTextField.setForeground(null);
+            connectionButton.setEnabled(true);
+        } else {
+            jTextField.setForeground(Color.RED);
+            connectionButton.setEnabled(false);
+        }
     }
 
     private JTextField createPortField() {
@@ -101,6 +151,7 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
     private void setCanEdit(boolean canConnect) {
         hostTextField.setEnabled(canConnect);
         portField.setEnabled(canConnect);
+        nameField.setEnabled(canConnect);
         _repaint();
     }
 
@@ -121,9 +172,5 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
         connectionButton.setText("Disconnect");
 
         _repaint();
-    }
-
-    private void onBadParam(String hostname) {
-
     }
 }

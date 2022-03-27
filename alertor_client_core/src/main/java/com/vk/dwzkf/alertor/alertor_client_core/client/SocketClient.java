@@ -65,6 +65,9 @@ public class SocketClient {
 
     private IO.Options getOptions() {
         IO.Options options = new IO.Options();
+        if (socketConfig.getName() != null) {
+            options.query = "name="+socketConfig.getName();
+        }
         options.forceNew = true;
         options.transports = new String[] {WebSocket.NAME};
         options.reconnection = true;

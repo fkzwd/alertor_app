@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 public class UserDataExtractorConfiguration implements UserDataExtractor<SocketIOClient> {
     @Override
     public UserData extract(SocketIOClient from) {
+        final String name = from.getHandshakeData().getSingleUrlParam("name");
         return UserData.builder()
-                .name(from.getRemoteAddress().toString())
+                .name(name == null ? from.getRemoteAddress().toString() : name)
                 .uuid(from.getSessionId().toString())
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client.alertor.AlertConfig;
+import com.vk.dwzkf.alertor.alertor_client.alertor.AudioAlertor;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertEvent;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
@@ -17,8 +18,8 @@ public class RightPanelUi extends JPanel {
     public static final String DISABLE_ALERT = "Disable alert";
     public static final String ENABLE_ALERT = "Enable alert";
     private JButton alertButton;
-    private JButton alertConfigButton;
-    private JLabel alertConfigStatus;
+    private JCheckBox alertEnabledCheckbox;
+    private JCheckBox soundEnabledCheckbox;
     private final AlertConfig alertConfig;
     private final EventSender eventSender;
 
@@ -26,44 +27,30 @@ public class RightPanelUi extends JPanel {
     public void configure() {
         setLayout(new GridLayout(3,1,10,10));
         alertButton = createAlertButton();
-        alertConfigStatus = createAlertConfigStatus();
-        alertConfigButton = createAlertConfigButton();
+        alertEnabledCheckbox = createAlertEnabledCheckbox();
+        soundEnabledCheckbox = createSoundEnabledCheckbox();
 
         add(alertButton);
-        add(alertConfigButton);
-        add(alertConfigStatus);
+        add(alertEnabledCheckbox);
+        add(soundEnabledCheckbox);
     }
 
-    private JLabel createAlertConfigStatus() {
-        JLabel configStatus = new JLabel(getStatusMessage(alertConfig.isAlertEnabled()));
-        configStatus.setForeground(getStatusColor(alertConfig.isAlertEnabled()));
-        return configStatus;
-    }
-
-    private String getStatusMessage(boolean alertEnabled) {
-        return alertEnabled ? "Alert ENABLED!" : "Alert DISABLED!";
-    }
-
-    private Color getStatusColor(boolean alertEnabled) {
-        return alertEnabled ? Color.GREEN : Color.RED;
-    }
-
-    private JButton createAlertConfigButton() {
-        JButton jButton = new JButton(DISABLE_ALERT);
-        jButton.addActionListener(e -> {
-            if (jButton.getText().equalsIgnoreCase(DISABLE_ALERT)) {
-                alertConfig.setAlertEnabled(false);
-                alertConfigStatus.setText(getStatusMessage(false));
-                alertConfigStatus.setForeground(getStatusColor(false));
-                jButton.setText(ENABLE_ALERT);
-            } else if (jButton.getText().equalsIgnoreCase(ENABLE_ALERT)) {
-                alertConfig.setAlertEnabled(true);
-                alertConfigStatus.setText(getStatusMessage(true));
-                alertConfigStatus.setForeground(getStatusColor(true));
-                jButton.setText(DISABLE_ALERT);
-            }
+    private JCheckBox createSoundEnabledCheckbox() {
+        JCheckBox soundEnabled = new JCheckBox("Sound enabled");
+        soundEnabled.setSelected(AudioAlertor.AudioConfig.enabled);
+        soundEnabled.addActionListener(e -> {
+            AudioAlertor.AudioConfig.enabled = soundEnabled.isSelected();
         });
-        return jButton;
+        return soundEnabled;
+    }
+
+    private JCheckBox createAlertEnabledCheckbox() {
+        JCheckBox alertEnabled = new JCheckBox("Alert enabled");
+        alertEnabled.setSelected(alertConfig.isAlertEnabled());
+        alertEnabled.addActionListener(e -> {
+            alertConfig.setAlertEnabled(alertEnabled.isSelected());
+        });
+        return alertEnabled;
     }
 
     private JButton createAlertButton() {

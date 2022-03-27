@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-import static com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig.ALERT_CONFIG;
-import static com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig.GET_USERS;
+import static com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public class CommandsRegistrationConfig {
 
     static {
         CommandRegistry.register(ALERT_CONFIG, AlertCommand.class);
-        CommandRegistry.register(GET_USERS, GetUsersCommand.class);
+        CommandRegistry.register(USERS_STATE, GetUsersCommand.class);
     }
 
     @Autowired(required = false)

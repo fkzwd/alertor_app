@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 @ConfigurationProperties("socket.client")
 @Getter
@@ -14,4 +16,5 @@ public class SocketConfig {
     private String protocol = "http";
     private int port = 20021;
     private String context = "/alertor";
+    private String name = "User-0";
 }
