@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
+import com.vk.dwzkf.alertor.alertor_client.alertor.AudioPlayer;
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
@@ -29,9 +30,11 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
     private JTextArea messageArea;
     private JList<UserMessage> chatList;
     private final EventSender eventSender;
+    private final AudioPlayer audioPlayer = new AudioPlayer("492739-wood-block-droplet-18.wav");
 
     @PostConstruct
     public void configure() {
+        audioPlayer.init();
         setLayout(new BorderLayout());
         createElements();
         JScrollPane scrollPane = new JScrollPane(chatList);
@@ -190,6 +193,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
 
     @Override
     public void onMessage(UserMessage userMessage) {
+        audioPlayer.play();
         dlm.addElement(userMessage);
     }
 
