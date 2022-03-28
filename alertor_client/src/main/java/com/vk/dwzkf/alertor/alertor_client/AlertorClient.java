@@ -19,7 +19,7 @@ public class AlertorClient {
     private static String mode = "window";
 
     public static void main(String[] args) throws Exception {
-        AudioAlertor.setAudio("skrillex_holdin_on_8.wav");
+        AudioAlertor.setAudio("cs_1_6_go_go_go.wav");
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("window")) {
                 mode = "window";

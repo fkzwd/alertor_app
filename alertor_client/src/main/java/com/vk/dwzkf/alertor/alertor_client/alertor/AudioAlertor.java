@@ -30,7 +30,7 @@ public class AudioAlertor implements AlertListener {
     @Setter
     public static class AudioConfig {
         public static float volume = 1.0f;
-        public static String path = "skrillex_holdin_on_8.wav";
+        public static String path = "cs_1_6_go_go_go.wav";
         public static boolean enabled = true;
 
         public static void setVolume(float volume) {
