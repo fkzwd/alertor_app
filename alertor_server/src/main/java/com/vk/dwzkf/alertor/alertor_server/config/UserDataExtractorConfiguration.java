@@ -5,14 +5,30 @@ import com.vk.dwzkf.alertor.commons.entity.UserData;
 import com.vk.dwzkf.alertor.socket_server_core.extractors.UserDataExtractor;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
+import java.util.Random;
+
 @Component
 public class UserDataExtractorConfiguration implements UserDataExtractor<SocketIOClient> {
+    private final Random random = new Random();
+
     @Override
     public UserData extract(SocketIOClient from) {
         final String name = from.getHandshakeData().getSingleUrlParam("name");
         return UserData.builder()
                 .name(name == null ? from.getRemoteAddress().toString() : name)
                 .uuid(from.getSessionId().toString())
+                .color(randomColor(from))
                 .build();
+    }
+
+    private int randomColor(SocketIOClient client) {
+        if (client.get("color") == null) {
+            final float hue = random.nextFloat();
+            final float saturation = (random.nextInt(2000) + 1000) / 10000f;
+            final float luminance = 0.9f;
+            client.set("color", Color.getHSBColor(hue, saturation, luminance).getRGB());
+        }
+        return client.get("color");
     }
 }

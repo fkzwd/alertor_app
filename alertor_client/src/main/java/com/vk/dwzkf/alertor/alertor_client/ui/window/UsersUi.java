@@ -2,8 +2,8 @@ package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client.listener.UserStateListener;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
-import com.vk.dwzkf.alertor.commons.entity.UserData;
-import lombok.RequiredArgsConstructor;
+import com.vk.dwzkf.alertor.commons.socket_api.users_state.UserConnectData;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,8 +13,20 @@ import java.awt.*;
 @Component
 @RequiredArgsConstructor
 public class UsersUi extends JPanel implements SocketConnectorListener, UserStateListener {
-    private final DefaultListModel<String> dlm = new DefaultListModel<>();
-    private JList<String> jList = new JList<>(dlm);
+    public static final Color CURRENT_USER_COLOR = new Color(89, 55, 222);
+    private final DefaultListModel<Wrapper> dlm = new DefaultListModel<>();
+    private JList<Wrapper> jList = new JList<>(dlm);
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+    private static class Wrapper {
+        private JLabel label;
+        @EqualsAndHashCode.Include
+        private String uuid;
+    }
 
     @PostConstruct
     public void configure() {
@@ -23,6 +35,12 @@ public class UsersUi extends JPanel implements SocketConnectorListener, UserStat
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         jList.setFixedCellHeight(25);
         jList.setFixedCellWidth(200);
+        jList.setCellRenderer(new DefaultListCellRenderer(){
+            @Override
+            public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                return ((Wrapper) value).label;
+            }
+        });
         add(new JLabel("Users"));
         add(wrapToScroll(jList));
     }
@@ -49,12 +67,22 @@ public class UsersUi extends JPanel implements SocketConnectorListener, UserStat
     }
 
     @Override
-    public void onConnected(UserData userData) {
-        dlm.addElement(userData.getName());
+    public void onConnected(UserConnectData connectedUser) {
+        JLabel label = new JLabel(connectedUser.getUserData().getName());
+        label.setBackground(new Color(connectedUser.getUserData().getColor()));
+        label.setOpaque(true);
+        if (connectedUser.isYou()) {
+            label.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            label.setFont(new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, label.getFont().getSize()));
+        } else {
+            label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, label.getFont().getSize()));
+        }
+        Wrapper wrapper = new Wrapper(label, connectedUser.getUserData().getUuid());
+        dlm.addElement(wrapper);
     }
 
     @Override
-    public void onDisconnected(UserData userData) {
-        dlm.removeElement(userData.getName());
+    public void onDisconnected(UserConnectData disconnectedUser) {
+        dlm.removeElement(new Wrapper(null, disconnectedUser.getUserData().getUuid()));
     }
 }

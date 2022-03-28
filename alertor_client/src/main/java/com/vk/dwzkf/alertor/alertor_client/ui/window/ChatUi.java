@@ -124,7 +124,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
 
     private void sendMessage() {
         if (!messageArea.getText().isBlank()) {
-            eventSender.emit(SocketApiConfig.SEND_MESSAGE, new UserMessage(messageArea.getText(), null));
+            eventSender.emit(SocketApiConfig.SEND_MESSAGE, new UserMessage(messageArea.getText()));
             messageArea.setText("");
         }
     }
@@ -144,7 +144,12 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
                 jTextArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 JLabel userLabel = new JLabel(value.getUserData().getName() + ": ");
                 userLabel.setOpaque(true);
-                setChatEntityColor(index, jPanel, userLabel);
+                if (value.isYourMessage()) {
+                    userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, userLabel.getFont().getSize()));
+                } else {
+                    userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, userLabel.getFont().getSize()));
+                }
+                setChatEntityColor(index, jPanel, userLabel, value);
                 userLabel.setAlignmentY(JLabel.TOP);
                 userLabel.setVerticalTextPosition(JLabel.TOP);
                 userLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
@@ -167,15 +172,10 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         return chat;
     }
 
-    private void setChatEntityColor(int idx, JPanel panel, JLabel label) {
-        Color c;
-        if (idx % 2 == 0) {
-            c = new Color(204,232,252);
-        } else {
-            c = new Color(143,208,255);
-        }
-        panel.setBackground(c);
-        label.setBackground(c);
+    private void setChatEntityColor(int idx, JPanel panel, JLabel label, UserMessage userMessage) {
+        final Color color = new Color(userMessage.getUserData().getColor());
+        panel.setBackground(color);
+        label.setBackground(color);
     }
 
     private JTextArea createMessageArea() {

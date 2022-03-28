@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client.alertor;
 
+import com.vk.dwzkf.alertor.commons.socket_api.AlertCallback;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -10,17 +11,23 @@ import java.util.ArrayList;
 public class JFrameAlertor extends JFrame {
     private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
     private final java.util.List<java.awt.Component> lables = new ArrayList<>();
+    private final java.util.List<java.awt.Component> components = new ArrayList<>();
     private final int alertCycles;
     private final int alertTimeoutMs;
-    private static final Font font = new Font(Font.SERIF, Font.BOLD, 35);
+    private static final Font messageFont = new Font(Font.SERIF, Font.BOLD, 35);
+    private static final Font usernameFont = new Font(Font.SERIF, Font.BOLD, 35);
     private final String message;
+    private final AlertCallback alertCallback;
 
-    public JFrameAlertor(int alertCycles, int alertTimeoutMs, String message) throws HeadlessException {
-        this.alertCycles = alertCycles;
-        this.alertTimeoutMs = alertTimeoutMs;
-        this.message = message;
+    public JFrameAlertor(AlertCallback alertCallback) throws HeadlessException {
+        this.alertCycles = alertCallback.getCycles();
+        this.alertTimeoutMs = alertCallback.getTimeout();
+        this.message = alertCallback.getMessage();
+        this.alertCallback = alertCallback;
         reset();
     }
+
+    private GridBagLayout mgr;
 
     {
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -32,14 +39,15 @@ public class JFrameAlertor extends JFrame {
         setBounds(0, 0, width, height);
         setAlwaysOnTop(true);
         setResizable(false);
-        setLayout(new GridBagLayout());
+        mgr = new GridBagLayout();
+        setLayout(mgr);
     }
 
     private void reset() {
         if (isVisible()) {
             setVisible(false);
         }
-        lables.forEach(this::remove);
+        components.forEach(this::remove);
         lables.clear();
         JTextArea label = new JTextArea();
         label.setCaret(new NoopCaret());
@@ -48,9 +56,19 @@ public class JFrameAlertor extends JFrame {
         label.setForeground(Color.RED);
         label.setBackground(Color.BLACK);
         label.setOpaque(true);
-        label.setFont(font);
+        label.setFont(messageFont);
         lables.add(label);
-        add(label);
+        components.add(label);
+        JLabel usernameLabel = new JLabel("-- "+alertCallback.getUserData().getName()+" --");
+        usernameLabel.setFont(usernameFont);
+        usernameLabel.setEnabled(false);
+        final GridBagConstraints userLabelConstraints = new GridBagConstraints();
+        add(usernameLabel, userLabelConstraints);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 1;
+        constraints.gridx = 0;
+        components.add(usernameLabel);
+        add(label, constraints);
     }
 
     public void start() {

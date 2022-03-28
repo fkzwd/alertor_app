@@ -12,5 +12,6 @@ import lombok.Setter;
 @Setter
 public class UserConnectData {
     private boolean connected;
+    private boolean you;
     private UserData userData;
 }

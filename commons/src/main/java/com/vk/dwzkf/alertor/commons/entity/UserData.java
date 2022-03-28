@@ -12,4 +12,5 @@ import lombok.*;
 public class UserData {
     private String name;
     private String uuid;
+    private int color;
 }

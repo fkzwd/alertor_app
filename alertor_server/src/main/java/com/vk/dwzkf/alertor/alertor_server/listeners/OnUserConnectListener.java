@@ -27,19 +27,19 @@ public class OnUserConnectListener implements UsersListener {
                 new UserConnectCallback(
                         userMonitoring.getConnectedUsers()
                                 .stream()
-                                .map(m -> new UserConnectData(true, m.getUserData()))
+                                .map(m -> new UserConnectData(true, m.getUserData().getUuid().equals(userData.getUuid()), m.getUserData()))
                                 .collect(Collectors.toList())
                 )
         );
         eventSender.broadcast(userData,
                 SocketApiConfig.USER_CONNECT_STATE,
-                new UserConnectCallback(List.of(new UserConnectData(true, userData))));
+                new UserConnectCallback(List.of(new UserConnectData(true, false, userData))));
     }
 
     @Override
     public void onDisconnect(UserData userData) {
         eventSender.broadcast(userData,
                 SocketApiConfig.USER_CONNECT_STATE,
-                new UserConnectCallback(List.of(new UserConnectData(false, userData))));
+                new UserConnectCallback(List.of(new UserConnectData(false, false, userData))));
     }
 }

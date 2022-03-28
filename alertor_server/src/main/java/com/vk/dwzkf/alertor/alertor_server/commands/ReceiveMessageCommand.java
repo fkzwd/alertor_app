@@ -17,7 +17,7 @@ public class ReceiveMessageCommand extends SocketCommand<UserMessage, UserMessag
 
     @Override
     public UserMessage onEvent(UserData user, UserMessage arg) {
-        eventSender.broadcast(SocketApiConfig.SEND_MESSAGE, new UserMessage(arg.getMessage(), user));
-        return null;
+        eventSender.broadcast(user, SocketApiConfig.SEND_MESSAGE, new UserMessage(arg.getMessage(), user, false));
+        return new UserMessage(arg.getMessage(), user, true);
     }
 }

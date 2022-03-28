@@ -26,9 +26,10 @@ public class AlertCommand extends SocketCommand<AlertEvent, AlertCallback> {
 
         AlertCallback alertCallback = new AlertCallback(arg.getMessage(),
                 timeout,
-                cycles
+                cycles,
+                user
         );
         eventSender.broadcast(user, SocketApiConfig.ALERT_CONFIG, alertCallback);
-        return new AlertCallback(message, timeout, cycles);
+        return new AlertCallback(message, timeout, cycles, user);
     }
 }

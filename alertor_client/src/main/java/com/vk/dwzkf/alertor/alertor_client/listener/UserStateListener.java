@@ -1,8 +1,8 @@
 package com.vk.dwzkf.alertor.alertor_client.listener;
 
-import com.vk.dwzkf.alertor.commons.entity.UserData;
+import com.vk.dwzkf.alertor.commons.socket_api.users_state.UserConnectData;
 
 public interface UserStateListener {
-    void onConnected(UserData userData);
-    void onDisconnected(UserData userData);
+    void onConnected(UserConnectData userData);
+    void onDisconnected(UserConnectData userData);
 }

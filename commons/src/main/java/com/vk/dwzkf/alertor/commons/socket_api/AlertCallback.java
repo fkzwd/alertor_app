@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.commons.socket_api;
 
+import com.vk.dwzkf.alertor.commons.entity.UserData;
 import lombok.*;
 
 @AllArgsConstructor
@@ -11,4 +12,5 @@ public class AlertCallback {
     private String message;
     private int timeout = 150;
     private int cycles = 30;
+    private UserData userData;
 }

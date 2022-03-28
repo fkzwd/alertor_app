@@ -29,7 +29,7 @@ public class UserStateHandler extends EventHandler<UserConnectCallback> {
             if (connectState.isConnected()) {
                 userStateListeners.forEach(l -> {
                     try {
-                        l.onConnected(connectState.getUserData());
+                        l.onConnected(connectState);
                     } catch (Exception e) {
                         log.error("Error on listener {}", l.getClass().getSimpleName(), e);
                     }
@@ -37,7 +37,7 @@ public class UserStateHandler extends EventHandler<UserConnectCallback> {
             } else {
                 userStateListeners.forEach(l -> {
                     try {
-                        l.onDisconnected(connectState.getUserData());
+                        l.onDisconnected(connectState);
                     } catch (Exception e) {
                         log.error("Error on listener {}", l.getClass().getSimpleName(), e);
                     }

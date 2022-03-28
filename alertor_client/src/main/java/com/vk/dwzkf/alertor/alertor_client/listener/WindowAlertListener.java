@@ -23,10 +23,7 @@ public class WindowAlertListener extends JFrame implements AlertListener {
         log.info("Alert received. Message: {}", alertCallback.getMessage());
         if (alertConfig.isAlertEnabled()) {
             executorService.execute(() -> {
-                JFrameAlertor alertor = new JFrameAlertor(alertCallback.getCycles(),
-                        alertCallback.getTimeout(),
-                        alertCallback.getMessage()
-                );
+                JFrameAlertor alertor = new JFrameAlertor(alertCallback);
                 alertor.start();
                 alertor.shutdown();
             });
