@@ -54,7 +54,6 @@ public class JFrameAlertor extends JFrame {
     }
 
     public void start() {
-        AudioAlertor.play();
         final Thread fontReplaces = new Thread(() -> {
             int cylce = 0;
             while (!Thread.currentThread().isInterrupted() && cylce < alertCycles) {
@@ -101,7 +100,6 @@ public class JFrameAlertor extends JFrame {
             e.printStackTrace();
         }
         setVisible(false);
-        AudioAlertor.stop();
         setAlwaysOnTop(false);
         reset();
     }
