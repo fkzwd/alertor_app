@@ -6,6 +6,8 @@ import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
+import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessageCallback;
+import com.vk.dwzkf.alertor.commons.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,15 +22,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ChatUi extends JPanel implements MessageListener, SocketConnectorListener {
-    private DefaultListModel<UserMessage> dlm = new DefaultListModel<>();
+    private DefaultListModel<UserMessageCallback> dlm = new DefaultListModel<>();
     private JButton sendButton;
     private JTextArea messageArea;
-    private JList<UserMessage> chatList;
+    private JList<UserMessageCallback> chatList;
     private final EventSender eventSender;
     private final AudioPlayer audioPlayer = new AudioPlayer("492739-wood-block-droplet-18.wav");
 
@@ -129,33 +132,20 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         }
     }
 
-    private JList<UserMessage> createChatList() {
-        JList<UserMessage> chat = new JList<>(dlm);
+    private JList<UserMessageCallback> createChatList() {
+        JList<UserMessageCallback> chat = new JList<>(dlm);
         chat.setFixedCellWidth(120);
-        chat.setCellRenderer(new ListCellRenderer<UserMessage>() {
+        chat.setCellRenderer(new ListCellRenderer<UserMessageCallback>() {
             @Override
-            public java.awt.Component getListCellRendererComponent(JList<? extends UserMessage> list, UserMessage value, int index, boolean isSelected, boolean cellHasFocus) {
+            public java.awt.Component getListCellRendererComponent(JList<? extends UserMessageCallback> list, UserMessageCallback value, int index, boolean isSelected, boolean cellHasFocus) {
                 JPanel jPanel = new JPanel();
                 jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.X_AXIS));
-                JTextArea jTextArea = new JTextArea(value.getMessage());
-                jTextArea.setLineWrap(true);
-                jTextArea.setWrapStyleWord(true);
-                jTextArea.setEditable(false);
-                jTextArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-                JLabel userLabel = new JLabel(value.getUserData().getName() + ": ");
-                userLabel.setOpaque(true);
-                if (value.isYourMessage()) {
-                    userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, userLabel.getFont().getSize()));
-                } else {
-                    userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, userLabel.getFont().getSize()));
-                }
-                setChatEntityColor(index, jPanel, userLabel, value);
-                userLabel.setAlignmentY(JLabel.TOP);
-                userLabel.setVerticalTextPosition(JLabel.TOP);
-                userLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-                jPanel.add(userLabel);
-                jPanel.add(jTextArea);
-                JPanel wrapper = new JPanel(new BorderLayout());
+                java.awt.Component messageComponent = createMessageComponent(value, isSelected, cellHasFocus, index);
+                java.awt.Component userInfoComponent = createUserInfoComponent(value, isSelected, cellHasFocus, index);
+                jPanel.add(userInfoComponent);
+                jPanel.add(messageComponent);
+                JPanel wrapper = new JPanel(new BorderLayout(5,0));
+                setChatEntityColor(index, jPanel, userInfoComponent, value);
 
                 wrapper.setBorder((
                                 BorderFactory.createCompoundBorder(
@@ -164,6 +154,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
                                 )
                         )
                 );
+                wrapper.add(createTimeComponent(value), BorderLayout.NORTH);
                 wrapper.add(jPanel);
                 return wrapper;
             }
@@ -172,7 +163,36 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         return chat;
     }
 
-    private void setChatEntityColor(int idx, JPanel panel, JLabel label, UserMessage userMessage) {
+    private java.awt.Component createTimeComponent(UserMessageCallback value) {
+        final JLabel label = new JLabel(value.getTime().format(DateTimeUtils.DATE_TIME_FORMATTER));
+        label.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        return label;
+    }
+
+    private java.awt.Component createUserInfoComponent(UserMessageCallback value, boolean isSelected, boolean cellHasFocus, int index) {
+        JLabel userLabel = new JLabel(value.getUserData().getName() + ": ");
+        userLabel.setOpaque(true);
+        if (value.isYourMessage()) {
+            userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, userLabel.getFont().getSize()));
+        } else {
+            userLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, userLabel.getFont().getSize()));
+        }
+        userLabel.setAlignmentY(JLabel.TOP);
+        userLabel.setVerticalTextPosition(JLabel.TOP);
+        userLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        return userLabel;
+    }
+
+    private JTextArea createMessageComponent(UserMessageCallback value, boolean isSelected, boolean isCellHasFocus, int idx) {
+        JTextArea jTextArea = new JTextArea(value.getMessage());
+        jTextArea.setLineWrap(true);
+        jTextArea.setWrapStyleWord(true);
+        jTextArea.setEditable(false);
+        jTextArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        return jTextArea;
+    }
+
+    private void setChatEntityColor(int idx, JPanel panel, java.awt.Component label, UserMessageCallback userMessage) {
         final Color color = new Color(userMessage.getUserData().getColor());
         panel.setBackground(color);
         label.setBackground(color);
@@ -192,7 +212,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
     }
 
     @Override
-    public void onMessage(UserMessage userMessage) {
+    public void onMessage(UserMessageCallback userMessage) {
         audioPlayer.play();
         dlm.addElement(userMessage);
     }

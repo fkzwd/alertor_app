@@ -3,6 +3,7 @@ package com.vk.dwzkf.alertor.alertor_client.handlers;
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.handlers.EventHandler;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
+import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessageCallback;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MessageHandler extends EventHandler<UserMessage> {
+public class MessageHandler extends EventHandler<UserMessageCallback> {
     private final List<MessageListener> listeners = new ArrayList<>();
 
     public void addListener(MessageListener messageListener) {
@@ -22,7 +23,7 @@ public class MessageHandler extends EventHandler<UserMessage> {
     }
 
     @Override
-    public void handleEvent(UserMessage event) {
+    public void handleEvent(UserMessageCallback event) {
         listeners.forEach(m -> {
             try {
                 m.onMessage(event);

@@ -3,6 +3,7 @@ package com.vk.dwzkf.alertor.commons.socket_api;
 import com.vk.dwzkf.alertor.commons.entity.UserData;
 import com.vk.dwzkf.alertor.commons.socket_api.get_users.GetUsersCallback;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
+import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessageCallback;
 import com.vk.dwzkf.alertor.commons.socket_api.users_state.UserConnectCallback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class SocketApiConfig<T, R> {
     public static final SocketApiConfig<AlertEvent, AlertCallback> ALERT_CONFIG;
     public static final SocketApiConfig<Void, GetUsersCallback> USERS_STATE;
     public static final SocketApiConfig<Void, UserConnectCallback> USER_CONNECT_STATE;
-    public static final SocketApiConfig<UserMessage, UserMessage> SEND_MESSAGE;
+    public static final SocketApiConfig<UserMessage, UserMessageCallback> SEND_MESSAGE;
 
     static {
         ALERT_CONFIG = new SocketApiConfig<>(
@@ -38,7 +39,7 @@ public class SocketApiConfig<T, R> {
         SEND_MESSAGE = new SocketApiConfig<>("sendMessage",
                 "newMessageCallback",
                 UserMessage.class,
-                UserMessage.class);
+                UserMessageCallback.class);
     }
 
     private final String eventEndpoint;
