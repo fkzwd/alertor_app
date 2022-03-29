@@ -39,6 +39,7 @@ public class JFrameAlertor extends JFrame {
         setBounds(0, 0, width, height);
         setAlwaysOnTop(true);
         setResizable(false);
+        setBackground(new Color(0x0FFFFFFF, true));
         mgr = new GridBagLayout();
         setLayout(mgr);
     }
@@ -62,6 +63,7 @@ public class JFrameAlertor extends JFrame {
         JLabel usernameLabel = new JLabel("-- "+alertCallback.getUserData().getName()+" --");
         usernameLabel.setFont(usernameFont);
         usernameLabel.setEnabled(false);
+        usernameLabel.setOpaque(true);
         final GridBagConstraints userLabelConstraints = new GridBagConstraints();
         add(usernameLabel, userLabelConstraints);
         GridBagConstraints constraints = new GridBagConstraints();
