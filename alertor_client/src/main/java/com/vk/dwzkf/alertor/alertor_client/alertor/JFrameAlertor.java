@@ -18,18 +18,21 @@ public class JFrameAlertor extends JFrame {
     private static final Font usernameFont = new Font(Font.SERIF, Font.BOLD, 35);
     private final String message;
     private final AlertCallback alertCallback;
+    private final JFrameAlertorConfig config;
 
-    public JFrameAlertor(AlertCallback alertCallback) throws HeadlessException {
+    public JFrameAlertor(AlertCallback alertCallback, JFrameAlertorConfig config) throws HeadlessException {
         this.alertCycles = alertCallback.getCycles();
         this.alertTimeoutMs = alertCallback.getTimeout();
         this.message = alertCallback.getMessage();
         this.alertCallback = alertCallback;
+        this.config = config;
+        init();
         reset();
     }
 
     private GridBagLayout mgr;
 
-    {
+    public void init() {
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setJMenuBar(null);
         setUndecorated(true);
@@ -39,7 +42,7 @@ public class JFrameAlertor extends JFrame {
         setBounds(0, 0, width, height);
         setAlwaysOnTop(true);
         setResizable(false);
-        setBackground(new Color(0x0FFFFFFF, true));
+        setBackground(new Color(0x00FFFFFF | (config.getAlpha() << 24), true));
         mgr = new GridBagLayout();
         setLayout(mgr);
     }

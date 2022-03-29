@@ -1,6 +1,7 @@
 package com.vk.dwzkf.alertor.alertor_client.alertor;
 
 import com.vk.dwzkf.alertor.alertor_client.AlertorClient;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.FloatControl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,12 +20,37 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 @Slf4j
 public class AudioPlayer {
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private byte[] audio;
+    @Getter
     private Clip audioClip = null;
     private final String resourcePath;
-    @Setter
-    private boolean enabled = true;
+    @Getter
+    private final AudioConfig audioConfig = new AudioConfig(this);
+
+    @RequiredArgsConstructor
+    public static class AudioConfig {
+        private final AudioPlayer self;
+
+        float volume = 1.0f;
+        @Setter
+        @Getter
+        boolean enabled = true;
+
+        public float getVolume() {
+            if (self == null || self.getAudioClip() == null) return 0;
+            FloatControl gainControl = (FloatControl) self.getAudioClip().getControl(FloatControl.Type.MASTER_GAIN);
+            return (float) Math.pow(10f, gainControl.getValue() / 20f);
+        }
+
+        public void setVolume(float volume) {
+            if (self == null || self.getAudioClip() == null) return;
+            if (volume < 0f || volume > 1f)
+                throw new IllegalArgumentException("Volume not valid: " + volume);
+            FloatControl gainControl = (FloatControl) self.getAudioClip().getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(20f * (float) Math.log10(volume));
+        }
+    }
 
     @PostConstruct
     public void init() {
@@ -59,11 +85,13 @@ public class AudioPlayer {
     }
 
     public void play() {
-        if (audioClip != null && enabled) {
-            audioClip.stop();
-            audioClip.setFramePosition(0);
-            audioClip.setMicrosecondPosition(0);
-            executorService.execute(audioClip::start);
+        if (audioClip != null && getAudioConfig().enabled) {
+            executorService.execute(()-> {
+                audioClip.stop();
+                audioClip.setFramePosition(0);
+                audioClip.setMicrosecondPosition(0);
+                audioClip.start();
+            });
         }
     }
 

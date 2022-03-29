@@ -13,4 +13,5 @@ public class AlertCallback {
     private int timeout = 150;
     private int cycles = 30;
     private UserData userData;
+    private String time;
 }

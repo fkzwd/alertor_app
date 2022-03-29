@@ -20,9 +20,8 @@ import java.util.concurrent.Executors;
 public class AlertEventHandler extends EventHandler<AlertCallback> {
     private final List<AlertListener> alertListeners = new ArrayList<>();
 
-    @Autowired
-    public void addListeners(List<AlertListener> listeners) {
-        alertListeners.addAll(listeners);
+    public void addListener(AlertListener alertListener) {
+        alertListeners.add(alertListener);
     }
 
     @Override

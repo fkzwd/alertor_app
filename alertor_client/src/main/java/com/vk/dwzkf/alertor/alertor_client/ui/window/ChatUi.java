@@ -1,6 +1,7 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client.alertor.AudioPlayer;
+import com.vk.dwzkf.alertor.alertor_client.alertor.NoopCaret;
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
@@ -10,6 +11,7 @@ import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessageCallback;
 import com.vk.dwzkf.alertor.commons.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,22 +20,24 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.time.format.DateTimeFormatter;
+
+import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configureAutoscrollDown;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ChatUi extends JPanel implements MessageListener, SocketConnectorListener {
+public class ChatUi extends JPanel implements MessageListener {
     private DefaultListModel<UserMessageCallback> dlm = new DefaultListModel<>();
     private JButton sendButton;
+    private JButton clearChatButton;
     private JTextArea messageArea;
     private JList<UserMessageCallback> chatList;
     private final EventSender eventSender;
-    private final AudioPlayer audioPlayer = new AudioPlayer("492739-wood-block-droplet-18.wav");
+    @Qualifier("messagePlayer")
+    private final AudioPlayer audioPlayer;
+    //51.250.27.19
 
     @PostConstruct
     public void configure() {
@@ -41,30 +45,17 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         setLayout(new BorderLayout());
         createElements();
         JScrollPane scrollPane = new JScrollPane(chatList);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            private int prevMaxSize = -1;
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                if (prevMaxSize == -1) {
-                    prevMaxSize = e.getAdjustable().getMaximum();
-                }
-                if (prevMaxSize != e.getAdjustable().getMaximum()) {
-                    if (chatList.getLastVisibleIndex() != -1) {
-                        if (chatList.getLastVisibleIndex() == dlm.size() - 1) {
-                            e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-                        }
-                    }
-                }
-                prevMaxSize = e.getAdjustable().getMaximum();
-            }
-        });
+        configureAutoscrollDown(scrollPane, chatList, dlm, 1);
         add(scrollPane);
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.X_AXIS));
         JScrollPane messageAreaScroll = new JScrollPane(messageArea);
         messagePanel.add(messageAreaScroll);
-        messagePanel.add(sendButton);
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons,BoxLayout.Y_AXIS));
+        buttons.add(sendButton);
+        buttons.add(clearChatButton);
+        messagePanel.add(buttons);
         add(messagePanel, BorderLayout.SOUTH);
     }
 
@@ -72,6 +63,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         sendButton = createSendButton();
         messageArea = createMessageArea();
         chatList = createChatList();
+        clearChatButton = createClearChatButton();
 
         messageArea.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -125,6 +117,15 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
         chatList.setMaximumSize(chatList.getPreferredSize());
     }
 
+    private JButton createClearChatButton() {
+        JButton jButton = new JButton();
+        jButton.setText("Clear");
+        jButton.addActionListener(e -> {
+            dlm.clear();
+        });
+        return jButton;
+    }
+
     private void sendMessage() {
         if (!messageArea.getText().isBlank()) {
             eventSender.emit(SocketApiConfig.SEND_MESSAGE, new UserMessage(messageArea.getText()));
@@ -164,7 +165,7 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
     }
 
     private java.awt.Component createTimeComponent(UserMessageCallback value) {
-        final JLabel label = new JLabel(value.getTime().format(DateTimeUtils.DATE_TIME_FORMATTER));
+        final JLabel label = new JLabel(value.getTime());
         label.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
         return label;
     }
@@ -215,19 +216,5 @@ public class ChatUi extends JPanel implements MessageListener, SocketConnectorLi
     public void onMessage(UserMessageCallback userMessage) {
         audioPlayer.play();
         dlm.addElement(userMessage);
-    }
-
-    @Override
-    public void onConnect(Object[] args) {
-    }
-
-    @Override
-    public void onDisconnect(Object[] args) {
-        dlm.clear();
-    }
-
-    @Override
-    public void onConnectError(Object[] args) {
-        dlm.clear();
     }
 }

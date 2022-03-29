@@ -14,7 +14,7 @@ public class UserMessageCallback {
     private String message;
     private UserData userData;
     private boolean yourMessage;
-    private LocalDateTime time;
+    private String time;
 
     public UserMessageCallback(String message, UserData userData) {
         this.message = message;
