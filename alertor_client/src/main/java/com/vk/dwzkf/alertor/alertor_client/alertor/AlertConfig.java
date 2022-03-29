@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class AlertConfig {
-    private boolean alertEnabled = false;
+    private boolean alertEnabled = true;
     private boolean audioEnabled = true;
 }
