@@ -1,6 +1,5 @@
 package com.vk.dwzkf.alertor.alertor_client.alertor;
 
-import com.vk.dwzkf.alertor.alertor_client.AlertorClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,20 +12,31 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@RequiredArgsConstructor
 @Slf4j
 public class AudioPlayer {
-    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    protected final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private byte[] audio;
     @Getter
     private Clip audioClip = null;
-    private final String resourcePath;
+    private String resourcePath;
+    private String filePath;
     @Getter
-    private final AudioConfig audioConfig = new AudioConfig(this);
+    protected final AudioConfig audioConfig = new AudioConfig(this);
+
+    public AudioPlayer(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public AudioPlayer(Path filePath) {
+        this.filePath = filePath.toAbsolutePath().toString();
+    }
 
     @RequiredArgsConstructor
     public static class AudioConfig {
@@ -55,18 +65,47 @@ public class AudioPlayer {
     @PostConstruct
     public void init() {
         try {
-            initAudio(resourcePath);
+            reloadAudio();
         } catch (Exception e) {
             audioClip = null;
             audio = null;
         }
     }
 
-    public void initAudio(String path) {
-        URL audioRes = AlertorClient.class.getClassLoader().getResource(path);
+    private void reloadAudio() {
+        if (resourcePath == null) {
+            reloadAudioFile(filePath);
+        } else {
+            reloadAudioResource(resourcePath);
+        }
+    }
+
+    public void reloadAudioResource(String resourcePath) {
+        try {
+            reloadAudio(getUrl(resourcePath));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void reloadAudioFile(String filePath) {
+        try {
+            reloadAudio(Paths.get(filePath).toUri().toURL());
+        } catch (Exception e) {
+            log.error("Error occurred while load audio from path.", e);
+        }
+    }
+
+    protected void reloadAudio(URL audioRes) {
         if (audioRes == null) {
-            log.warn("No audio found on path: {}", path);
+            log.warn("No audio can be loaded.");
             return;
+        }
+        Clip prev = audioClip;
+        if (audioClip != null) {
+            audioClip.stop();
+            audioClip.close();
+            audioClip = null;
         }
         try (InputStream in = audioRes.openConnection().getInputStream()) {
             audio = in.readAllBytes();
@@ -74,14 +113,18 @@ public class AudioPlayer {
             Clip audioClip = AudioSystem.getClip();
             audioClip.open(audioInputStream);
             audioInputStream.close();
-            if (this.audioClip != null) {
-                this.audioClip.stop();
-                this.audioClip.close();
-            }
             this.audioClip = audioClip;
         } catch (Exception e) {
             log.error("Cannot load sound.", e);
+            audioClip = prev;
         }
+    }
+
+    public URL getUrl(String resourcePath) {
+        if (resourcePath != null) {
+            return this.getClass().getClassLoader().getResource(resourcePath);
+        }
+        return null;
     }
 
     public void play() {

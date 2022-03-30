@@ -26,7 +26,7 @@ public class ConfigRepositoryImpl implements ConfigRepository {
                 String name = resultSet.getString("name");
                 String context = resultSet.getString("context");
                 String protocol = resultSet.getString("protocol");
-                return new SocketConfig(requireNonNull(host), requireNonNull(protocol), port, requireNonNull(context),requireNonNull(name));
+                return new SocketConfig(requireNonNull(host), requireNonNull(protocol), port, requireNonNull(context),requireNonNull(name), null);
             }
         } catch (Exception e) {
             log.error("Error while reading from db.", e);

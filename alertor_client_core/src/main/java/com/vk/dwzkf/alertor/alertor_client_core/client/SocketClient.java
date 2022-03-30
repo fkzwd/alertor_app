@@ -68,6 +68,15 @@ public class SocketClient {
         if (socketConfig.getName() != null) {
             options.query = "name="+socketConfig.getName();
         }
+        if (socketConfig.getColor() != null) {
+            String q = options.query;
+            if (q == null) {
+                options.query = "color="+socketConfig.getColor();
+            } else {
+                q = q +"&color="+socketConfig.getColor();
+            }
+            options.query = q;
+        }
         options.forceNew = true;
         options.transports = new String[] {WebSocket.NAME};
         options.reconnection = true;

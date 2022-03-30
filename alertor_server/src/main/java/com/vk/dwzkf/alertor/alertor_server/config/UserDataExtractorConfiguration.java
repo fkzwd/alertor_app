@@ -14,7 +14,7 @@ public class UserDataExtractorConfiguration implements UserDataExtractor<SocketI
 
     @Override
     public UserData extract(SocketIOClient from) {
-        final String name = from.getHandshakeData().getSingleUrlParam("name");
+        String name = from.getHandshakeData().getSingleUrlParam("name");
         return UserData.builder()
                 .name(name == null ? from.getRemoteAddress().toString() : name)
                 .uuid(from.getSessionId().toString())
@@ -23,12 +23,23 @@ public class UserDataExtractorConfiguration implements UserDataExtractor<SocketI
     }
 
     private int randomColor(SocketIOClient client) {
+        if (client.getHandshakeData().getSingleUrlParam("color") != null) {
+            try {
+                return Integer.parseInt(client.getHandshakeData().getSingleUrlParam("color"));
+            } catch (Exception e) {
+                return randomColor();
+            }
+        }
         if (client.get("color") == null) {
-            final float hue = random.nextFloat();
-            final float saturation = (random.nextInt(2000) + 1000) / 10000f;
-            final float luminance = 0.9f;
-            client.set("color", Color.getHSBColor(hue, saturation, luminance).getRGB());
+            client.set("color", randomColor());
         }
         return client.get("color");
+    }
+
+    private int randomColor() {
+        final float hue = random.nextFloat();
+        final float saturation = (random.nextInt(2000) + 1000) / 10000f;
+        final float luminance = 0.9f;
+        return Color.getHSBColor(hue, saturation, luminance).getRGB();
     }
 }

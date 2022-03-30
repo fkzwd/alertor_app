@@ -1,5 +1,6 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
+import com.vk.dwzkf.alertor.alertor_client.config.PropertyListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.SocketClient;
 import com.vk.dwzkf.alertor.alertor_client_core.config.SocketConfig;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
@@ -13,11 +14,15 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import static com.vk.dwzkf.alertor.alertor_client.ui.window.RightPanelUi.USER_COLOR;
 
 @Component
 @RequiredArgsConstructor
-public class ConnectorUi extends JPanel implements SocketConnectorListener {
+public class ConnectorUi extends JPanel implements SocketConnectorListener, PropertyListener {
     public static final Color BAD_COLOR = new Color(171, 0, 40);
     public static final Color GOOD_COLOR = new Color(74, 171, 0);
     public static final String PORT_REGEX = "\\d{2,5}";
@@ -33,6 +38,21 @@ public class ConnectorUi extends JPanel implements SocketConnectorListener {
         hostTextField.setText(socketClient.getSocketConfig().getHost());
         portField.setText(String.valueOf(socketClient.getSocketConfig().getPort()));
         nameField.setText(socketClient.getSocketConfig().getName());
+    }
+
+    @Override
+    public List<String> properties() {
+        return List.of(USER_COLOR);
+    }
+
+    @Override
+    public void onLoaded(Map<String, String> props) {
+        socketClient.getSocketConfig().setColor(props.get(USER_COLOR));
+    }
+
+    @Override
+    public void onUpdated(String property, String value) {
+        socketClient.getSocketConfig().setColor(value);
     }
 
     private JButton createConnectionButton() {

@@ -1,16 +1,15 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
 import com.vk.dwzkf.alertor.alertor_client.alertor.AudioPlayer;
-import com.vk.dwzkf.alertor.alertor_client.alertor.NoopCaret;
 import com.vk.dwzkf.alertor.alertor_client.listener.MessageListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
-import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessage;
 import com.vk.dwzkf.alertor.commons.socket_api.message.UserMessageCallback;
 import com.vk.dwzkf.alertor.commons.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ import java.awt.event.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configureAutoscrollDown;
 
@@ -39,12 +37,12 @@ public class ChatUi extends JPanel implements MessageListener {
     private JList<UserMessageCallback> chatList;
     private final EventSender eventSender;
     @Qualifier("messagePlayer")
-    private final AudioPlayer audioPlayer;
+    private final AudioPlayer messagePlayer;
     //51.250.27.19
 
     @PostConstruct
     public void configure() {
-        audioPlayer.init();
+        messagePlayer.init();
         setLayout(new BorderLayout());
         createElements();
         JScrollPane scrollPane = new JScrollPane(chatList);
@@ -218,7 +216,7 @@ public class ChatUi extends JPanel implements MessageListener {
 
     @Override
     public void onMessage(UserMessageCallback userMessage) {
-        audioPlayer.play();
+        messagePlayer.play();
         dlm.addElement(userMessage);
     }
 }

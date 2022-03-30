@@ -21,4 +21,5 @@ public class SocketConfig {
     private int port = 20021;
     private String context = "/alertor";
     private String name = "User-0";
+    private String color;
 }
