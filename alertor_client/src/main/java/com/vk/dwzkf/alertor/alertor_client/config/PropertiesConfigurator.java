@@ -34,23 +34,22 @@ public class PropertiesConfigurator {
     @EventListener(ApplicationStartedEvent.class)
     public void loadProps() {
         Path propsFile = Paths.get(PROPS_PATH);
+        Properties props = new Properties();
+        this.props = props;
         if (!Files.isRegularFile(propsFile)) {
             try {
                 Files.createFile(propsFile);
-                return;
             } catch (IOException e) {
                 log.error("Cannot create props file", e);
                 return;
             }
         }
-        Properties props = new Properties();
         try (InputStream in = Files.newInputStream(propsFile)) {
             props.load(in);
         } catch (Exception e) {
             log.error("Cannot load properties from file: {}", propsFile.toAbsolutePath(), e);
             return;
         }
-        this.props = props;
         listeners.forEach(l -> {
             List<String> keys = l.properties();
             Map<String, String> properties = props.entrySet().stream()
