@@ -10,9 +10,7 @@ import com.vk.dwzkf.alertor.socket_server_core.config.EventSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 @Component
 @RequiredArgsConstructor
@@ -28,15 +26,15 @@ public class AlertCommand extends SocketCommand<AlertEvent, AlertCallback> {
         int timeout = arg.getTimeout() == null ? defaultTimeout : arg.getTimeout();
         int cycles = arg.getCycles() == null ? defaultCycles : arg.getCycles();
         String message = arg.getMessage() == null ? defaultMessage : arg.getMessage();
-        OffsetDateTime time = LocalDateTime.now().atOffset(ZoneOffset.of("+03:00"));
+        ZonedDateTime time = LocalDateTime.now().atZone(ZoneId.systemDefault());
 
         AlertCallback alertCallback = new AlertCallback(arg.getMessage(),
                 timeout,
                 cycles,
                 user,
-                time.format(DateTimeUtils.DATE_TIME_FORMATTER)
+                time.toEpochSecond()
         );
         eventSender.broadcast(user, SocketApiConfig.ALERT_CONFIG, alertCallback);
-        return new AlertCallback(message, timeout, cycles, user,time.format(DateTimeUtils.DATE_TIME_FORMATTER));
+        return new AlertCallback(message, timeout, cycles, user,time.toEpochSecond());
     }
 }

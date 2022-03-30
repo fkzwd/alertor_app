@@ -21,6 +21,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configureAutoscrollDown;
@@ -165,7 +168,8 @@ public class ChatUi extends JPanel implements MessageListener {
     }
 
     private java.awt.Component createTimeComponent(UserMessageCallback value) {
-        final JLabel label = new JLabel(value.getTime());
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value.getTime()), ZoneId.systemDefault());
+        final JLabel label = new JLabel(zdt.format(DateTimeUtils.DATE_TIME_FORMATTER));
         label.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
         return label;
     }

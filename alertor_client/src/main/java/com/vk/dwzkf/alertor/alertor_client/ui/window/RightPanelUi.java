@@ -9,6 +9,7 @@ import com.vk.dwzkf.alertor.alertor_client_core.client.EventSender;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertCallback;
 import com.vk.dwzkf.alertor.commons.socket_api.AlertEvent;
 import com.vk.dwzkf.alertor.commons.socket_api.SocketApiConfig;
+import com.vk.dwzkf.alertor.commons.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configureAutoscrollDown;
 
@@ -91,7 +95,8 @@ public class RightPanelUi extends JPanel implements AlertListener {
                 usernameLabel.setBackground(new Color(alert.getUserData().getColor()));
                 usernameLabel.setOpaque(true);
                 jPanel.add(usernameLabel);
-                jPanel.add(new JLabel(" alerted at: "+alert.getTime()));
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(alert.getTime()), ZoneId.systemDefault());
+                jPanel.add(new JLabel(" alerted at: "+zdt.format(DateTimeUtils.DATE_TIME_FORMATTER)));
                 jPanel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
                 return jPanel;
             }

@@ -10,11 +10,10 @@ import com.vk.dwzkf.alertor.socket_server_core.config.EventSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.beans.EventHandler;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -23,20 +22,20 @@ public class ReceiveMessageCommand extends SocketCommand<UserMessage, UserMessag
 
     @Override
     public UserMessageCallback onEvent(UserData user, UserMessage arg) {
-        OffsetDateTime time = LocalDateTime.now().atOffset(ZoneOffset.of("+03:00"));
+        ZonedDateTime time = LocalDateTime.now().atZone(ZoneOffset.systemDefault());
         eventSender.broadcast(user, SocketApiConfig.SEND_MESSAGE,
                 UserMessageCallback.builder()
                         .message(arg.getMessage())
                         .userData(user)
                         .yourMessage(false)
-                        .time(time.format(DateTimeUtils.DATE_TIME_FORMATTER))
+                        .time(time.toEpochSecond())
                         .build()
         );
         return UserMessageCallback.builder()
                 .message(arg.getMessage())
                 .yourMessage(true)
                 .userData(user)
-                .time(time.format(DateTimeUtils.DATE_TIME_FORMATTER))
+                .time(time.toEpochSecond())
                 .build();
     }
 }
