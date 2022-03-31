@@ -1,10 +1,9 @@
 package com.vk.dwzkf.alertor.alertor_client.ui.window;
 
-import com.vk.dwzkf.alertor.alertor_client.config.PropertyListener;
 import com.vk.dwzkf.alertor.alertor_client_core.client.SocketClient;
-import com.vk.dwzkf.alertor.alertor_client_core.config.SocketConfig;
 import com.vk.dwzkf.alertor.alertor_client_core.listener.SocketConnectorListener;
 import com.vk.dwzkf.alertor.commons.configurators.Constants;
+import com.vk.dwzkf.alertor.commons.configurators.PropertyListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.vk.dwzkf.alertor.alertor_client.ui.window.RightPanelUi.USER_COLOR;
 

@@ -1,4 +1,4 @@
-package com.vk.dwzkf.alertor.alertor_client.config;
+package com.vk.dwzkf.alertor.commons.configurators;
 
 import java.util.List;
 import java.util.Map;

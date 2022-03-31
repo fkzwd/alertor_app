@@ -1,5 +1,7 @@
 package com.vk.dwzkf.alertor.alertor_client.config;
 
+import com.vk.dwzkf.alertor.commons.configurators.PropertiesConfigurator;
+import com.vk.dwzkf.alertor.commons.configurators.PropertyListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

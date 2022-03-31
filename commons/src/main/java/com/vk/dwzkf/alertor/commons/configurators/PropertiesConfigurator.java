@@ -1,15 +1,8 @@
-package com.vk.dwzkf.alertor.alertor_client.config;
+package com.vk.dwzkf.alertor.commons.configurators;
 
-import com.vk.dwzkf.alertor.alertor_client.alertor.AudioPlayer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,21 +12,19 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
 @RequiredArgsConstructor
 @Slf4j
 public class PropertiesConfigurator {
-    public static final String PROPS_PATH = "./app.props";
     private Properties props;
     private final List<PropertyListener> listeners = new ArrayList<>();
+    private final String propsFilePath;
 
     public void addListener(PropertyListener propertyListener) {
         listeners.add(propertyListener);
     }
 
-    @EventListener(ApplicationStartedEvent.class)
     public void loadProps() {
-        Path propsFile = Paths.get(PROPS_PATH);
+        Path propsFile = Paths.get(propsFilePath);
         Properties props = new Properties();
         this.props = props;
         if (!Files.isRegularFile(propsFile)) {
@@ -65,9 +56,8 @@ public class PropertiesConfigurator {
         });
     }
 
-    @EventListener(ContextClosedEvent.class)
     public void saveProps() {
-        final Path path = Paths.get(PROPS_PATH);
+        final Path path = Paths.get(propsFilePath);
         if (!Files.exists(path)) {
             try {
                 Files.createFile(path);
@@ -90,3 +80,4 @@ public class PropertiesConfigurator {
                 .forEach(l -> l.onUpdated(key,value));
     }
 }
+
