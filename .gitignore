@@ -25,5 +25,6 @@ jooq/
 *.ipr
 out/
 
+*.props
 gradlew.bat
 gradlew
