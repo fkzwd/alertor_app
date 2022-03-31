@@ -23,6 +23,10 @@ public class PropertiesConfigurator {
         listeners.add(propertyListener);
     }
 
+    public String get(String key) {
+        return props.getProperty(key);
+    }
+
     public void loadProps() {
         Path propsFile = Paths.get(propsFilePath);
         Properties props = new Properties();
