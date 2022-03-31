@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configureAutoscrollDown;
 
@@ -39,6 +40,8 @@ import static com.vk.dwzkf.alertor.alertor_client.utils.JavaSwingUtils.configure
 @RequiredArgsConstructor
 @Slf4j
 public class RightPanelUi extends JPanel implements AlertListener, PropertyListener {
+    private final Random random = new Random();
+    private final int rgb = randomColor();
     public static final String AUDIO_RESOURCE = "audio_resource";
     public static final String AUDIO_FILE = "audio_file";
     public static final String ALPHA_PROP = "alpha_prop";
@@ -104,6 +107,7 @@ public class RightPanelUi extends JPanel implements AlertListener, PropertyListe
         redSlider = createRedSlider();
         greenSlider = createGreenSlider();
         blueSlider = createBlueSlider();
+        previewColor.setBackground(new Color(rgb));
 
         add(alertButton);
         add(alertEnabledCheckbox);
@@ -138,25 +142,26 @@ public class RightPanelUi extends JPanel implements AlertListener, PropertyListe
     }
 
     private JSlider createBlueSlider() {
-        JSlider jSlider = createSlider(255);
+        JSlider jSlider = createSlider(255, 0xFF);
         return jSlider;
     }
 
     private JSlider createGreenSlider() {
-        JSlider jSlider = createSlider(255);
+        JSlider jSlider = createSlider(255, 0x00FF00);
         return jSlider;
     }
 
     private JSlider createRedSlider() {
-        JSlider jSlider = createSlider(255);
+        JSlider jSlider = createSlider(255, 0xFF0000);
         return jSlider;
     }
 
-    private JSlider createSlider(int max) {
+    private JSlider createSlider(int max, int mask) {
         JSlider jSlider = new JSlider();
         jSlider.setAlignmentX(LEFT_ALIGNMENT);
         jSlider.setMinimum(0);
         jSlider.setMaximum(max);
+        jSlider.setValue(mask & rgb);
         jSlider.setOrientation(JSlider.VERTICAL);
         jSlider.addChangeListener(l -> {
             previewColor.setBackground(new Color(redSlider.getValue(), greenSlider.getValue(), blueSlider.getValue()));
@@ -398,5 +403,12 @@ public class RightPanelUi extends JPanel implements AlertListener, PropertyListe
                 propertiesConfigurator.update(USER_COLOR, String.valueOf(0xa311d4));
             }
         }
+    }
+
+    private int randomColor() {
+        final float hue = random.nextFloat();
+        final float saturation = (random.nextInt(2000) + 1000) / 10000f;
+        final float luminance = 0.9f;
+        return Color.getHSBColor(hue, saturation, luminance).getRGB();
     }
 }
