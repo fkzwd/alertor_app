@@ -5,4 +5,5 @@ include 'socket_server_core'
 include 'commons'
 include 'alertor_client'
 include 'ui_core'
+include 'updater'
 
