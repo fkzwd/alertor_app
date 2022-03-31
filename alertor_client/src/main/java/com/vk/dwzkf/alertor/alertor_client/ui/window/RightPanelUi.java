@@ -202,7 +202,11 @@ public class RightPanelUi extends JPanel implements AlertListener, PropertyListe
                 AlertCallback alert = (AlertCallback) value;
                 JPanel jPanel = new JPanel();
                 jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.X_AXIS));
-                JLabel usernameLabel = new JLabel("[" + alert.getUserData().getName().substring(0, 6) + "...]");
+                String userName = alert.getUserData().getName();
+                if (userName.length() > 6) {
+                    userName = userName.substring(0,6);
+                }
+                JLabel usernameLabel = new JLabel("[" + userName + "...]");
                 usernameLabel.setBackground(new Color(alert.getUserData().getColor()));
                 usernameLabel.setOpaque(true);
                 jPanel.add(usernameLabel);
@@ -403,6 +407,7 @@ public class RightPanelUi extends JPanel implements AlertListener, PropertyListe
                 propertiesConfigurator.update(USER_COLOR, String.valueOf(0xa311d4));
             }
         }
+        repaint();
     }
 
     private int randomColor() {

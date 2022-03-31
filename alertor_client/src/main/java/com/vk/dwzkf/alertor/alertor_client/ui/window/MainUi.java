@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class MainUi extends JFrame {
         setBounds(offsetWidth,offsetHeight, width, height);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                MainUi.this.repaint();
+            }
+        });
     }
 
     public void start() {
