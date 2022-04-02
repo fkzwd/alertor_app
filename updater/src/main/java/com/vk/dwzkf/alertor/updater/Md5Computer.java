@@ -15,6 +15,11 @@ public class Md5Computer {
 
     public String computMd5(String pathToJar) {
         try {
+            if (!Files.exists(Paths.get(pathToJar))) {
+                System.out.println("Not found jar file.");
+                System.out.println("Loading new...");
+                return "";
+            }
             Path path = Paths.get(pathToJar);
             MessageDigest md = MessageDigest.getInstance("md5");
             md.update(Files.readAllBytes(path));
