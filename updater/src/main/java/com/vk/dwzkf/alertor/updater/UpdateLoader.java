@@ -11,12 +11,14 @@ public class UpdateLoader {
 
     public byte[] load(String address) {
         try {
+            System.out.println("Start loading update...");
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(address+"/alertor/jar"))
                     .build();
             HttpResponse<byte[]> resp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
             if (resp.statusCode() == 200) {
+                System.out.println("Update loaded...");
                 return resp.body();
             } else {
                 System.err.println("Cannot load jar file, server return "+resp.statusCode());

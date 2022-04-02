@@ -47,9 +47,6 @@ public class UpdaterApp implements PropertyListener {
         this.address = addr;
         try {
             int code = checkForUpdates();
-            if (code == 0) {
-                System.out.println("Updated or already actual version.");
-            }
             System.exit(code);
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -61,12 +58,14 @@ public class UpdaterApp implements PropertyListener {
         String currentmd5 = md5Computer.computMd5(pathToJar);
         String remoteMd5 = md5Computer.getRemoteMd5(address);
         if (currentmd5.equals(remoteMd5)) {
+            System.out.println("No need to update...");
             return 0;
         }
         Path tmp = Files.createTempFile(null, null);
         try {
             Files.write(tmp, updateLoader.load(address));
             Files.move(tmp, Paths.get(pathToJar), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Updated successfully.");
             return 0;
         } finally {
             Files.deleteIfExists(tmp);
